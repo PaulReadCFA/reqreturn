@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Required Return Calculator | CFA Institute</title>
+  <meta name="description" content="Interactive required return calculator using the Gordon Growth Model">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="cfa-base.css">
+  <link rel="stylesheet" href="required-return-specific.css">
+  
+  <!-- Chart.js for visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Skip Links for Accessibility -->
+    <nav role="navigation" aria-label="Skip links">
+      <a href="#calculator" class="skip-link">Skip to calculator</a>
+      <a href="#visualizer" class="skip-link">Skip to data table</a>
+    </nav>
+    
+    <main class="content">
+      <!-- Card 1: Equation -->
+      <section id="equation-card" class="card">
+        <h4 class="card-title">Gordon Growth Model Equation</h4>
+        <p class="equation-intro">
+          This equation calculates the required return that investors demand given current pricing and expected growth.
+        </p>
+        
+        <!-- Dynamic equation with actual values -->
+        <div class="equation-container" role="region" aria-label="Required return calculation with your values" aria-live="polite" id="dynamic-equation-container">
+          <div id="dynamic-mathml-equation">
+            <!-- Populated by JavaScript -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Cards 2 & 3: Results and Visualizer (side by side on desktop) -->
+      <div class="grid-container">
+        <!-- Card 2: Results & Analysis -->
+        <div class="grid-item-left">
+          <section class="card" id="results-card">
+            <h4 class="card-title">Results and Analysis</h4>
+            <div class="card-content">
+              <div id="results-content">
+                <!-- Populated by JavaScript -->
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Card 3: Visualizer -->
+        <div class="grid-item-right">
+          <section class="card" id="visualizer" tabindex="-1">
+            <h4 class="card-title">Required Return Analysis</h4>
+            <div class="card-content">
+              <!-- View toggle buttons -->
+              <div class="view-controls">
+                <div class="legend" id="chart-legend" role="list" aria-label="Chart legend">
+                  <span class="legend-item" role="listitem">
+                    <span class="legend-color" style="background-color: var(--color-return-negative);"></span>
+                    Initial investment <span style="color: var(--color-return-negative);">(P₀)</span>
+                  </span>
+                  <span class="legend-item" role="listitem">
+                    <span class="legend-color" style="background-color: var(--color-return-dividend);"></span>
+                    Dividend cash flow <span style="color: var(--color-return-dividend);">(D)</span>
+                  </span>
+                  <span class="legend-item" role="listitem">
+                    <span class="legend-color legend-dashed-line" style="border-bottom: 2px dashed var(--color-return-required); background: none; width: 1.5rem; height: 0; border-left: none; border-right: none; border-top: none;"></span>
+                    Required return <span style="color: var(--color-return-required);">(r)</span>
+                  </span>
+                </div>
+                
+                <div class="button-group" role="group" aria-label="View mode - switch between chart and table">
+                  <button id="chart-view-btn" class="toggle-btn active" aria-pressed="true">
+                    Show Chart
+                  </button>
+                  <button id="table-view-btn" class="toggle-btn" aria-pressed="false">
+                    Show Table
+                  </button>
+                </div>
+              </div>
+
+              <!-- Screen reader announcement for view changes -->
+              <div class="sr-only" aria-live="polite" aria-atomic="true" id="view-announcement"></div>
+
+              <!-- Hidden chart description -->
+              <div class="sr-only" id="return-chart-desc">
+                <h4 id="return-chart-title">Required return and dividend projection over time</h4>
+                <p>
+                  This chart displays the projected dividend cash flows over 10 years with the calculated required return.
+                  At year 0, the initial stock purchase price is shown as a negative cash flow (money paid out).
+                  Then, at each subsequent year, dividend payments grow at the specified growth rate.
+                  The dashed blue line shows the constant required return percentage on the right axis.
+                </p>
+                <p>
+                  Keyboard navigation: Tab to focus the chart. Use Left and Right arrow keys to move between years.
+                  Press Home to jump to year 0, or End to jump to the final year.
+                  Each year will announce its dividend amount, required return, and total cash flow.
+                </p>
+              </div>
+
+              <!-- Chart container -->
+              <div id="chart-container" class="chart-wrapper" 
+                   role="region" 
+                   aria-labelledby="return-chart-title" 
+                   aria-describedby="return-chart-desc"
+                   tabindex="-1">
+                <canvas id="return-chart"></canvas>
+              </div>
+
+              <!-- Table container -->
+              <div id="table-container" class="table-wrapper" style="display: none;"
+                   role="region"  
+                   aria-label="Required return projection table"  
+                   tabindex="-1">
+                <table id="cash-flow-table" class="data-table" aria-describedby="table-note" tabindex="0">
+                  <!-- Populated by JavaScript -->
+                </table>
+                <p id="table-note" class="table-note">
+                  Note: Values in parentheses indicate negative cash flows (outflows). Hover over values to see calculations. Press <kbd>Escape</kbd> to exit table navigation.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- Card 4: Calculator -->
+      <section class="card" id="calculator" tabindex="-1">
+        <h4 class="card-title">Required Return Calculator</h4>
+        <div class="card-content">
+          <!-- Input controls -->
+          <div class="input-section">
+            <p class="sr-only" id="inputHelp">
+              Enter values and the calculator updates results and the chart automatically.
+            </p>
+
+            <div class="input-group-inline">
+              <div class="input-inline">
+                <label for="market-price" class="input-label-inline">
+                  Market price <span style="color: var(--color-return-negative);">(P₀)</span>:
+                </label>
+                <div class="input-with-suffix-inline">
+                  <span class="input-prefix-inline">$</span>
+                  <input 
+                    type="number" 
+                    id="market-price" 
+                    class="input-field-inline"
+                    min="1" max="500" step="0.01" value="54.56">
+                </div>
+              </div>
+
+              <div class="input-inline">
+                <label for="current-dividend" class="input-label-inline">
+                  Current dividend <span style="color: var(--color-return-dividend);">(D₀)</span>:
+                </label>
+                <div class="input-with-suffix-inline">
+                  <span class="input-prefix-inline">$</span>
+                  <input 
+                    type="number" 
+                    id="current-dividend" 
+                    class="input-field-inline"
+                    min="0" max="50" step="0.01" value="5.10">
+                </div>
+              </div>
+
+              <div class="input-inline">
+                <label for="growth-rate" class="input-label-inline">
+                  Growth rate <span style="color: var(--color-green-data);">(g)</span>:
+                </label>
+                <div class="input-with-suffix-inline">
+                  <input 
+                    type="number" 
+                    id="growth-rate" 
+                    class="input-field-inline"
+                    min="0" max="25" step="0.01" value="6.40">
+                  <span class="input-suffix-inline">%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Validation summary -->
+            <div id="validation-summary" class="validation-summary" role="alert" style="display: none;">
+              <div class="validation-title">Please correct the following:</div>
+              <ul id="validation-list"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script type="module" src="required-return-calculator.js"></script>
+</body>
+</html>
