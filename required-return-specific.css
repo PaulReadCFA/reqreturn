@@ -16,7 +16,7 @@
 }
 
 /* ==========================================================================
-   2. RESULT BOXES – Required Return Specific
+   2. RESULT BOXES — Required Return Specific
    ========================================================================== */
 .result-box.required-return {
   background-color: var(--color-bg-blue);
@@ -75,7 +75,51 @@
 }
 
 /* ==========================================================================
-   3. INPUT LAYOUT – Inline with Prefix/Suffix
+   2A. VIEW CONTROLS OVERRIDE
+   ========================================================================== */
+.view-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.view-controls .legend {
+  flex: 1;
+}
+
+.view-controls .button-group {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+@media (max-width: 640px) {
+  .view-controls {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  
+  .view-controls .legend {
+    flex: 1;
+    min-width: 100%;
+    margin-bottom: 0.75rem;
+  }
+  
+  .view-controls .button-group {
+    margin-left: auto;
+    width: auto;
+  }
+  
+  .button-group .toggle-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* ==========================================================================
+   3. INPUT LAYOUT — Inline with Prefix/Suffix
    ========================================================================== */
 .input-group-inline {
   display: flex;
@@ -102,14 +146,14 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  width: 7rem;
+  width: 8rem;
   position: relative;
 }
 
 .input-field-inline {
   flex: 1;
   width: 100%;
-  padding: 0.4rem 0.5rem;
+  padding: 0.4rem 2rem 0.4rem 0.5rem;
   border: 1px solid var(--color-gray-300);
   border-radius: 0.375rem;
   font-size: 0.875rem;
@@ -122,19 +166,21 @@
   font-weight: 500;
   font-size: 0.875rem;
   margin-right: 0.25rem;
+  flex-shrink: 0;
 }
 
 .input-suffix-inline {
   position: absolute;
-  right: 0.4rem;
+  right: 0.5rem;
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-gray-500);
   pointer-events: none;
-  width: 1.2rem;
+  width: auto;
   text-align: right;
   font-size: 0.875rem;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 /* When we have a prefix, adjust the input padding */
@@ -164,7 +210,7 @@
 }
 
 /* ==========================================================================
-   4. EQUATION DISPLAY – Required Return Specific
+   4. EQUATION DISPLAY — Required Return Specific
    ========================================================================== */
 .equation-container {
   padding: 1rem;

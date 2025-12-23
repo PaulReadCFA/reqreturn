@@ -146,55 +146,97 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
       },
       scales: {
         x: {
-          title: { display: true, text: 'Years' },
-          grid: { display: false }
+          title: { 
+            display: true, 
+            text: 'Years',
+            color: '#1f2937',
+            font: {
+              weight: 600
+            }
+          },
+          grid: { display: false },
+          ticks: {
+            color: '#1f2937',
+            font: {
+              weight: 500
+            }
+          },
+          border: {
+            color: '#1f2937',
+            width: 2
+          }
         },
         y: {
-          title: { display: true, text: 'Cash Flows ($)' },
+          title: { 
+            display: true, 
+            text: 'Cash Flows (USD)',
+            color: '#1f2937',
+            font: {
+              weight: 600
+            }
+          },
           position: 'left',
           ticks: {
-            callback: function(value) { return formatCurrency(value); },
+            callback: function(value) { 
+              // Format without USD prefix since it's in the axis label
+              const absValue = Math.abs(value);
+              const formatted = absValue.toLocaleString('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+              });
+              return value < 0 ? `(${formatted})` : formatted;
+            },
             autoSkip: true,
             maxRotation: 0,
-            minRotation: 0
+            minRotation: 0,
+            color: '#1f2937',
+            font: {
+              weight: 500
+            }
           },
-          grid: { color: 'rgba(0, 0, 0, 0.05)' }
+          grid: { color: 'rgba(0, 0, 0, 0.05)' },
+          border: {
+            color: '#1f2937',
+            width: 2
+          }
         },
         y2: {
-          title: { display: false },
+          title: { 
+            display: true,
+            text: 'Required Return (%)',
+            color: COLORS.required,
+            font: {
+              weight: 600
+            }
+          },
           position: 'right',
           min: 0,
           max: requiredReturn ? Math.max(15, requiredReturn * 1.3) : 15,
           ticks: {
-            callback: function(value) { return formatPercentage(value, 1); },
+            callback: function(value) { 
+              // Format without % sign
+              return value.toFixed(1);
+            },
             color: COLORS.required,
             autoSkip: true,
             maxRotation: 0,
-            minRotation: 0
+            minRotation: 0,
+            font: {
+              weight: 500
+            }
           },
-          grid: { display: false }
+          grid: { display: false },
+          border: {
+            color: COLORS.required,
+            width: 2
+          }
         }
       },
       layout: {
-        padding: { left: 10, right: 10, top: showLabels ? 35 : 15, bottom: 10 }
+        padding: { left: 10, right: 10, top: showLabels ? 25 : 10, bottom: 10 }
       }
     },
     plugins: [{
-      id: 'horizontalY2Title',
-      afterDraw: (chart) => {
-        const ctx = chart.ctx;
-        const chartArea = chart.chartArea;
-        ctx.save();
-        ctx.fillStyle = COLORS.required;
-        const fontSize = Math.max(11, Math.min(14, chartArea.width / 50));
-        ctx.font = `bold ${fontSize}px sans-serif`;
-        ctx.textAlign = 'right';
-        ctx.textBaseline = 'top';
-        ctx.fillText('Required Return (%)', chartArea.right, chartArea.top - 25);
-        ctx.restore();
-      }
-    },
-    {
       id: 'stackedBarLabels',
       afterDatasetsDraw: (chart) => {
         if (!showLabels) return;
