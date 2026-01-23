@@ -51,9 +51,9 @@ export function formatCurrency(value, signed = false) {
   });
   
   if (value < 0) {
-    return signed ? `-USD ${formatted}` : `(USD ${formatted})`;
+    return `−$${formatted}`;
   }
-  return `USD ${formatted}`;
+  return `$${formatted}`;
 }
 
 /**
@@ -125,4 +125,116 @@ export function announceToScreenReader(message) {
       announcement.textContent = '';
     }, 1000);
   }
+}
+
+/**
+ * Initialize static equation rendering
+ * Call this once when the page loads to render the static equation with variables
+ */
+export function initializeStaticEquation() {
+  const container = document.getElementById('static-equation');
+  if (!container) {
+    console.error('Static equation container not found');
+    return;
+  }
+  
+  // Using MathJax with TeX notation for the static equation
+  const equation = `
+    $$\\color{#7a46ff}{r} = \\frac{\\color{#3c6ae5}{Div_t}\\color{#15803d}{(1 + g)}}{\\color{#b95b1d}{PV_t}} + \\color{#15803d}{g} = \\frac{\\color{#3c6ae5}{Div_{t+1}}}{\\color{#b95b1d}{PV_t}} + \\color{#15803d}{g}$$
+  `;
+  
+  container.innerHTML = equation;
+  
+  // Typeset the equation with MathJax
+  if (window.MathJax) {
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, container]);
+  }
+}
+
+/**
+ * Initialize keyboard navigation for view switching
+ * Tab moves between buttons, arrow keys move focus, Enter/Space activates and moves focus to content
+ */
+/**
+ * Initialize keyboard navigation for view switching
+ * Simple approach: Arrow keys move between buttons, clicking a button doesn't move focus to content
+ */
+/**
+ * Initialize keyboard navigation for view switching
+ * Arrow keys move between buttons AND switch views
+ * Enter/Space on chart button moves focus to canvas
+ */
+export function initializeViewKeyboardNavigation() {
+  const chartContainer = document.getElementById('chart-container');
+  const tableContainer = document.getElementById('table-container');
+  const chartBtn = document.getElementById('chart-view-btn');
+  const tableBtn = document.getElementById('table-view-btn');
+  
+  if (!chartContainer || !tableContainer || !chartBtn || !tableBtn) {
+    console.error('View navigation buttons not found');
+    return;
+  }
+  
+  // Arrow keys on buttons move focus AND switch views
+  const handleButtonArrowKeys = (e) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      
+      if (e.target === chartBtn && !tableBtn.classList.contains('active')) {
+        // Currently on chart button, switch to table
+        tableBtn.click();
+        tableBtn.focus();
+      } else if (e.target === chartBtn && tableBtn.classList.contains('active')) {
+        // Already showing table, just move focus
+        tableBtn.focus();
+      } else if (e.target === tableBtn && !chartBtn.classList.contains('active')) {
+        // Currently on table button, switch to chart
+        chartBtn.click();
+        chartBtn.focus();
+      } else if (e.target === tableBtn && chartBtn.classList.contains('active')) {
+        // Already showing chart, just move focus
+        chartBtn.focus();
+      }
+    }
+  };
+  
+  chartBtn.addEventListener('keydown', handleButtonArrowKeys);
+  tableBtn.addEventListener('keydown', handleButtonArrowKeys);
+  
+  // Enter/Space on chart button moves focus to canvas
+  const handleChartActivation = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      // Ensure chart is visible
+      if (!chartBtn.classList.contains('active')) {
+        chartBtn.click();
+      }
+      // Move focus to chart canvas
+      setTimeout(() => {
+        const canvas = document.getElementById('return-chart');
+        if (canvas) {
+          canvas.focus();
+        }
+      }, 100);
+    }
+  };
+  
+  chartBtn.addEventListener('keydown', handleChartActivation);
+  
+  // Enter/Space on table button just activates it (normal behavior)
+  // No special handling needed - browser default works fine
+}
+
+/**
+ * Initialize all calculator features
+ * Call this once after DOM is loaded and all elements are in place
+ */
+export function initializeCalculator() {
+  // Render static equation with color-coded variables
+  initializeStaticEquation();
+  
+  // Set up keyboard navigation for chart/table switching
+  initializeViewKeyboardNavigation();
+  
+  console.log('Calculator initialization complete');
 }

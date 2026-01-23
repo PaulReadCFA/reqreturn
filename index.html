@@ -12,26 +12,43 @@
   
   <!-- Chart.js for visualization -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
+  <!-- MathJax 2.7.7 for equation rendering -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      displayAlign: "center",
+      displayIndent: "0em"
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
   <div class="container">
     <!-- Skip Links for Accessibility -->
     <nav role="navigation" aria-label="Skip links">
-      <a href="#calculator" class="skip-link">Skip to calculator</a>
-      <a href="#visualizer" class="skip-link">Skip to data table</a>
+      <a href="#market-price" class="skip-link">Skip to data entry</a>
+      <a href="#cash-flow-table" class="skip-link">Skip to data table</a>
     </nav>
     
     <main class="content">
-      <!-- Card 1: Equation -->
-      <section id="equation-card" class="card">
-        <h4 class="card-title">Gordon Growth Model Equation</h4>
-        <p class="equation-intro">
-          This equation calculates the required return that investors demand given current pricing and expected growth.
-        </p>
+      <!-- Card 0: Static Equation -->
+      <section id="static-equation-card" class="card">
+        <!-- Static equation with color-coded variables -->
+        <div class="equation-container" role="region" aria-label="Gordon Growth Model equation with variables">
+          <div id="static-equation" style="text-align: center;">
+            <!-- Populated by JavaScript -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Card 1: Dynamic Equation -->
+      <section id="dynamic-equation-card" class="card">
+        <h4 class="card-title">Implied Required Return</h4>
         
         <!-- Dynamic equation with actual values -->
         <div class="equation-container" role="region" aria-label="Required return calculation with your values" aria-live="polite" id="dynamic-equation-container">
-          <div id="dynamic-mathml-equation">
+          <div id="dynamic-equation">
             <!-- Populated by JavaScript -->
           </div>
         </div>
@@ -50,7 +67,7 @@
             <div class="input-group-inline">
               <div class="input-inline">
                 <label for="market-price" class="input-label-inline">
-                  Market price <span style="color: var(--color-return-negative);">(P₀)</span>:
+                  Market price <span style="color: var(--color-return-negative);">(PV<sub>t</sub>)</span>:
                 </label>
                 <div class="input-with-suffix-inline">
                   <span class="input-prefix-inline">USD</span>
@@ -58,13 +75,13 @@
                     type="number" 
                     id="market-price" 
                     class="input-field-inline"
-                    min="1" max="500" step="0.01" value="54.56">
+                    min="1" max="500" step="0.1" value="54.56">
                 </div>
               </div>
 
               <div class="input-inline">
                 <label for="current-dividend" class="input-label-inline">
-                  Current dividend <span style="color: var(--color-return-dividend);">(D₀)</span>:
+                  Current dividend <span style="color: var(--color-return-dividend);">(Div<sub>t</sub>)</span>:
                 </label>
                 <div class="input-with-suffix-inline">
                   <span class="input-prefix-inline">USD</span>
@@ -72,7 +89,7 @@
                     type="number" 
                     id="current-dividend" 
                     class="input-field-inline"
-                    min="0" max="50" step="0.01" value="5.10">
+                    min="0" max="50" step="0.1" value="5.10">
                 </div>
               </div>
 
@@ -85,7 +102,7 @@
                     type="number" 
                     id="growth-rate" 
                     class="input-field-inline"
-                    min="0" max="25" step="0.01" value="6.40">
+                    min="0" max="25" step="0.1" value="6.40">
                   <span class="input-suffix-inline">%</span>
                 </div>
               </div>
@@ -100,7 +117,7 @@
         </div>
       </section>
 
-      <!-- Card 3: Visualizer -->
+      <!-- Card 3: Visualizer (full width) -->
       <section class="card" id="visualizer" tabindex="-1">
         <h4 class="card-title">Required Return Analysis</h4>
         <div class="card-content">
@@ -109,11 +126,11 @@
             <div class="legend" id="chart-legend" role="list" aria-label="Chart legend">
               <span class="legend-item" role="listitem">
                 <span class="legend-color" style="background-color: var(--color-return-negative);"></span>
-                Initial investment <span style="color: var(--color-return-negative);">(P₀)</span>
+                Initial investment <span style="color: var(--color-return-negative);">(PV<sub>t</sub>)</span>
               </span>
               <span class="legend-item" role="listitem">
                 <span class="legend-color" style="background-color: var(--color-return-dividend);"></span>
-                Dividend cash flow <span style="color: var(--color-return-dividend);">(D)</span>
+                Dividend cash flow <span style="color: var(--color-return-dividend);">(Div<sub>t</sub>)</span>
               </span>
               <span class="legend-item" role="listitem">
                 <span class="legend-color legend-dashed-line" style="border-bottom: 2px dashed var(--color-return-required); background: none; width: 1.5rem; height: 0; border-left: none; border-right: none; border-top: none;"></span>
@@ -141,7 +158,7 @@
               This chart displays the projected dividend cash flows over 10 years with the calculated required return.
               At year 0, the initial stock purchase price is shown as a negative cash flow (money paid out).
               Then, at each subsequent year, dividend payments grow at the specified growth rate.
-              The dashed blue line shows the constant required return percentage on the right axis.
+              The dashed purple line shows the constant required return percentage on the right axis.
             </p>
             <p>
               Keyboard navigation: Tab to focus the chart. Use Left and Right arrow keys to move between years.
@@ -164,17 +181,14 @@
                role="region"  
                aria-label="Required return projection table"  
                tabindex="-1">
-            <table id="cash-flow-table" class="data-table" aria-describedby="table-note" tabindex="0">
+            <table id="cash-flow-table" class="data-table" tabindex="0">
               <!-- Populated by JavaScript -->
             </table>
-            <p id="table-note" class="table-note">
-              Note: Values in parentheses indicate negative cash flows (outflows). Hover over values to see calculations. Press <kbd>Escape</kbd> to exit table navigation.
-            </p>
           </div>
         </div>
       </section>
 
-      <!-- Card 4: Results & Analysis -->
+      <!-- Card 4: Results & Analysis (full width) -->
       <section class="card" id="results-card">
         <h4 class="card-title">Results and Analysis</h4>
         <div class="card-content">

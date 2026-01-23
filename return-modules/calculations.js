@@ -5,11 +5,11 @@
 
 /**
  * Calculate required return using Gordon Growth Model
- * Formula: r = (D₁ / P₀) + g
+ * Formula: r = (Dâ‚ / Pâ‚€) + g
  * 
  * @param {Object} params - Model parameters
- * @param {number} params.marketPrice - Current market price (P₀)
- * @param {number} params.currentDividend - Current dividend (D₀)
+ * @param {number} params.marketPrice - Current market price (Pâ‚€)
+ * @param {number} params.currentDividend - Current dividend (Dâ‚€)
  * @param {number} params.growthRate - Growth rate (g, as percentage)
  * @returns {Object} Calculation results
  */
@@ -18,14 +18,14 @@ export function calculateRequiredReturn({ marketPrice, currentDividend, growthRa
   const g = growthRate / 100;
   
   // Calculate next year's dividend
-  // D₁ = D₀ × (1 + g)
+  // Dâ‚ = Dâ‚€ Ã— (1 + g)
   const d1 = currentDividend * (1 + g);
   
   // Calculate dividend yield
   const dividendYield = d1 / marketPrice;
   
   // Calculate required return
-  // r = (D₁ / P₀) + g
+  // r = (Dâ‚ / Pâ‚€) + g
   const requiredReturn = dividendYield + g;
   
   // Convert to percentage
@@ -47,7 +47,7 @@ export function calculateRequiredReturn({ marketPrice, currentDividend, growthRa
  * Generate dividend cash flow projections
  * @param {Object} params - Calculation parameters
  * @param {number} params.marketPrice - Initial investment
- * @param {number} params.currentDividend - Current dividend (D₀)
+ * @param {number} params.currentDividend - Current dividend (Dâ‚€)
  * @param {number} params.growthRateDecimal - Growth rate (as decimal)
  * @param {number} params.years - Number of years to project (default 10)
  * @returns {Array} Array of cash flow objects
@@ -68,7 +68,7 @@ export function generateCashFlows({ marketPrice, currentDividend, growthRateDeci
   let cumulativeTotal = -marketPrice;
   
   for (let year = 1; year <= years; year++) {
-    // D_t = D₀ × (1 + g)^t
+    // D_t = Dâ‚€ Ã— (1 + g)^t
     const dividend = currentDividend * Math.pow(1 + growthRateDecimal, year);
     cumulativeTotal += dividend;
     
@@ -115,7 +115,7 @@ export function calculateRequiredReturnMetrics(params) {
 
 /**
  * Calculate stock price using Gordon Growth Model (for reference)
- * P₀ = D₁ / (r - g)
+ * Pâ‚€ = Dâ‚ / (r - g)
  * 
  * This is the inverse calculation - given required return and growth,
  * what should the price be?

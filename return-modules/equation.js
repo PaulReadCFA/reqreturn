@@ -1,62 +1,67 @@
 import { formatCurrency, formatPercentage } from './utils.js';
 
+/**
+ * Render static equation with color-coded variables
+ */
+export function renderStaticEquation() {
+  const container = document.getElementById('static-equation');
+  if (!container) {
+    console.error('Static equation container not found');
+    return;
+  }
+  
+  // Using MathJax with TeX notation for the static equation
+  const equation = `
+    $$\\color{#7a46ff}{r} = \\frac{\\color{#3c6ae5}{Div_t}\\color{#15803d}{(1 + g)}}{\\color{#b95b1d}{PV_t}} + \\color{#15803d}{g} = \\frac{\\color{#3c6ae5}{Div_{t+\\color{black}{1}}}}{\\color{#b95b1d}{PV_t}} + \\color{#15803d}{g}$$
+  `;
+  
+  container.innerHTML = equation;
+  
+  // Typeset the equation with MathJax
+  if (window.MathJax) {
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, container]);
+  }
+}
+
+/**
+ * Render dynamic equation with actual numerical values
+ */
 export function renderDynamicEquation(calculations, params) {
-  const container = document.getElementById('dynamic-mathml-equation');
+  const container = document.getElementById('dynamic-equation');
   if (!container) {
     console.error('Dynamic equation container not found');
     return;
   }
   
   const { requiredReturn, d1, dividendYield } = calculations;
-  const { marketPrice, growthRate } = params;
+  const { marketPrice, currentDividend, growthRate } = params;
   
+  // Format values for display
   const rFormatted = formatPercentage(requiredReturn);
   const d1Formatted = formatCurrency(d1);
+  const d0Formatted = formatCurrency(currentDividend);
   const p0Formatted = formatCurrency(marketPrice);
   const gFormatted = formatPercentage(growthRate);
-  const yieldFormatted = formatPercentage(dividendYield);
+  const gDecimal = (growthRate / 100).toFixed(4);
   
-  const mathML = `
-    <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
-      <mrow>
-        <msub>
-          <mi mathcolor="#3c6ae5">r</mi>
-          <mtext mathcolor="#3c6ae5">required</mtext>
-        </msub>
-        <mo>=</mo>
-        <mfrac linethickness="1.2px">
-          <msub>
-            <mi mathvariant="bold" mathcolor="#15803d">D</mi>
-            <mn mathcolor="#15803d">1</mn>
-          </msub>
-          <msub>
-            <mi mathvariant="bold" mathcolor="#b95b1d">P</mi>
-            <mn mathcolor="#b95b1d">0</mn>
-          </msub>
-        </mfrac>
-        <mo>+</mo>
-        <mi mathcolor="#15803d">g</mi>
-        <mo>=</mo>
-        <mfrac linethickness="1.2px">
-          <mtext mathvariant="bold" mathcolor="#15803d">${d1Formatted}</mtext>
-          <mtext mathvariant="bold" mathcolor="#b95b1d">${p0Formatted}</mtext>
-        </mfrac>
-        <mo>+</mo>
-        <mtext mathcolor="#15803d">${gFormatted}</mtext>
-        <mo>=</mo>
-        <mtext mathcolor="#3c6ae5" mathvariant="bold">${rFormatted}</mtext>
-      </mrow>
-    </math>
-    <div style="text-align: center; margin-top: 0.5rem; font-size: 0.875rem; color: #374151;">
-      <div>Dividend yield: ${yieldFormatted} + Growth rate: ${gFormatted} = Required return: ${rFormatted}</div>
-    </div>
+  // Using MathJax with TeX notation for the dynamic equation with numerical values
+  const equation = `
+    $$\\color{#7a46ff}{r} = \\frac{\\color{#3c6ae5}{${d0Formatted}}\\color{#15803d}{(1 + ${gDecimal})}}{\\color{#b95b1d}{${p0Formatted}}} + \\color{#15803d}{${gFormatted}} = \\frac{\\color{#3c6ae5}{${d1Formatted}}}{\\color{#b95b1d}{${p0Formatted}}} + \\color{#15803d}{${gFormatted}} = \\color{#7a46ff}{${rFormatted}}$$
   `;
   
-  container.innerHTML = mathML;
+  container.innerHTML = equation;
   
+  // Typeset the equation with MathJax
+  if (window.MathJax) {
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, container]);
+  }
+  
+  // Screen reader announcement
   const announcement = `Required return equals ${rFormatted}. ` +
-    `Calculated as: next year's dividend ${d1Formatted} divided by current market price ${p0Formatted}, ` +
-    `plus growth rate ${gFormatted}.`;
+    `Calculated as: current dividend ${d0Formatted} times 1 plus growth rate ${gFormatted}, ` +
+    `divided by current price ${p0Formatted}, plus growth rate ${gFormatted}. ` +
+    `This equals next year's dividend ${d1Formatted} divided by current price ${p0Formatted}, ` +
+    `plus growth rate ${gFormatted}, which equals ${rFormatted}.`;
   
   let liveRegion = document.getElementById('equation-live-region');
   if (!liveRegion) {

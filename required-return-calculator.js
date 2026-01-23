@@ -21,12 +21,14 @@ import {
   listen, 
   focusElement, 
   announceToScreenReader,
-  debounce
+  debounce,
+  initializeStaticEquation,
+  initializeViewKeyboardNavigation
 } from './return-modules/utils.js';
 import { renderChart, shouldShowLabels, destroyChart } from './return-modules/chart.js';
 import { renderTable } from './return-modules/table.js';
 import { renderResults } from './return-modules/results.js';
-import { renderDynamicEquation } from './return-modules/equation.js';
+import { renderDynamicEquation, renderStaticEquation } from './return-modules/equation.js';
 
 // =============================================================================
 // INITIALIZATION
@@ -34,6 +36,10 @@ import { renderDynamicEquation } from './return-modules/equation.js';
 
 function init() {
   console.log('Required Return Calculator initializing...');
+  
+  // NEW: Initialize static equation (Card 0) and keyboard navigation
+  initializeStaticEquation();
+  initializeViewKeyboardNavigation();
   
   setupInputListeners();
   setupViewToggle();

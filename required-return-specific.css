@@ -9,18 +9,18 @@
    ========================================================================== */
 :root {
   /* Required Return Calculator Specific Colors */
-  --color-return-required: var(--color-blue-interactive);   /* #3c6ae5 - Required return */
-  --color-return-dividend: var(--color-green-data);         /* #15803d - Dividend payments */
-  --color-return-negative: var(--color-orange-deep);        /* #b95b1d - Initial investment */
-  --color-return-growth: var(--color-green-data);           /* #15803d - Growth rate */
+  --color-return-required: var(--color-purple-bold);        /* #7a46ff - Required return (r) */
+  --color-return-dividend: var(--color-blue-interactive);   /* #3c6ae5 - Dividend payments (D) */
+  --color-return-negative: var(--color-orange-deep);        /* #b95b1d - Current price (P₀) */
+  --color-return-growth: var(--color-green-data);           /* #15803d - Growth rate (g) */
 }
 
 /* ==========================================================================
-   2. RESULT BOXES — Required Return Specific
+   2. RESULT BOXES â€“ Required Return Specific
    ========================================================================== */
 .result-box.required-return {
-  background-color: var(--color-bg-blue);
-  border-color: var(--color-blue-interactive);
+  background-color: var(--color-bg-purple);
+  border-color: var(--color-purple-bold);
 }
 
 .result-box.model-info {
@@ -29,9 +29,12 @@
 }
 
 .result-title.required-return {
-  font-size: 1.125rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--color-blue-interactive);
+  color: var(--color-purple-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin-bottom: 0.75rem;
 }
 
 .result-title.model-info {
@@ -39,7 +42,7 @@
 }
 
 .result-value {
-  color: var(--color-blue-interactive);
+  color: var(--color-purple-bold);
   word-wrap: break-word;
   overflow-wrap: break-word;
   max-width: 100%;
@@ -75,51 +78,7 @@
 }
 
 /* ==========================================================================
-   2A. VIEW CONTROLS OVERRIDE
-   ========================================================================== */
-.view-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.view-controls .legend {
-  flex: 1;
-}
-
-.view-controls .button-group {
-  flex-shrink: 0;
-  margin-left: auto;
-}
-
-@media (max-width: 640px) {
-  .view-controls {
-    flex-direction: row;
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
-  
-  .view-controls .legend {
-    flex: 1;
-    min-width: 100%;
-    margin-bottom: 0.75rem;
-  }
-  
-  .view-controls .button-group {
-    margin-left: auto;
-    width: auto;
-  }
-  
-  .button-group .toggle-btn {
-    padding: 0.4rem 0.75rem;
-    font-size: 0.8125rem;
-  }
-}
-
-/* ==========================================================================
-   3. INPUT LAYOUT — Inline with Prefix/Suffix
+   3. INPUT LAYOUT â€“ Inline with Prefix/Suffix
    ========================================================================== */
 .input-group-inline {
   display: flex;
@@ -146,14 +105,14 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  width: 8rem;
+  width: 7rem;
   position: relative;
 }
 
 .input-field-inline {
   flex: 1;
   width: 100%;
-  padding: 0.4rem 2rem 0.4rem 0.5rem;
+  padding: 0.4rem 0.5rem;
   border: 1px solid var(--color-gray-300);
   border-radius: 0.375rem;
   font-size: 0.875rem;
@@ -166,21 +125,19 @@
   font-weight: 500;
   font-size: 0.875rem;
   margin-right: 0.25rem;
-  flex-shrink: 0;
 }
 
 .input-suffix-inline {
   position: absolute;
-  right: 0.5rem;
+  right: 0.4rem;
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-gray-500);
   pointer-events: none;
-  width: auto;
+  width: 1.2rem;
   text-align: right;
   font-size: 0.875rem;
   font-weight: 500;
-  flex-shrink: 0;
 }
 
 /* When we have a prefix, adjust the input padding */
@@ -210,7 +167,7 @@
 }
 
 /* ==========================================================================
-   4. EQUATION DISPLAY — Required Return Specific
+   4. EQUATION DISPLAY â€“ Required Return Specific
    ========================================================================== */
 .equation-container {
   padding: 1rem;
@@ -382,6 +339,17 @@ math mo {
 /* ==========================================================================
    RESPONSIVE TABLE - Required Return Specific
    ========================================================================== */
+
+/* View controls - prevent layout shift */
+.view-controls {
+  min-height: 44px;
+  align-items: center;
+}
+
+.view-controls .button-group {
+  margin-left: auto;
+  flex-shrink: 0;
+}
 
 /* At very narrow widths, adjust font sizes */
 @media (max-width: 480px) {
