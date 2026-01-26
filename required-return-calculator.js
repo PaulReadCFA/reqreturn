@@ -22,8 +22,7 @@ import {
   focusElement, 
   announceToScreenReader,
   debounce,
-  initializeStaticEquation,
-  initializeViewKeyboardNavigation
+  initializeStaticEquation
 } from './return-modules/utils.js';
 import { renderChart, shouldShowLabels, destroyChart } from './return-modules/chart.js';
 import { renderTable } from './return-modules/table.js';
@@ -37,9 +36,8 @@ import { renderDynamicEquation, renderStaticEquation } from './return-modules/eq
 function init() {
   console.log('Required Return Calculator initializing...');
   
-  // NEW: Initialize static equation (Card 0) and keyboard navigation
+  // Initialize static equation (Card 0)
   initializeStaticEquation();
-  initializeViewKeyboardNavigation();
   
   setupInputListeners();
   setupViewToggle();
@@ -58,7 +56,7 @@ function setupSkipLinks() {
   if (skipToVisualizer) {
     listen(skipToVisualizer, 'click', (e) => {
       e.preventDefault();
-      switchView('table');
+      switchView('table', true);  // Move focus when using skip link
       const section = $('#visualizer');
       if (section) {
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -146,11 +144,43 @@ function setupViewToggle() {
     return;
   }
   
-  listen(chartBtn, 'click', () => switchView('chart'));
-  listen(tableBtn, 'click', () => switchView('table'));
+  // Make buttons focusable via Tab key
+  chartBtn.tabIndex = 0;
+  tableBtn.tabIndex = 0;
+  
+  // Click handlers - clicking moves focus to content
+  listen(chartBtn, 'click', () => switchView('chart', true));
+  listen(tableBtn, 'click', () => switchView('table', true));
+  
+  // Arrow key navigation
+  [chartBtn, tableBtn].forEach(btn => {
+    btn.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        
+        // Toggle between buttons
+        const next = btn === chartBtn ? tableBtn : chartBtn;
+        const newView = next === chartBtn ? 'chart' : 'table';
+        
+        // Switch view WITHOUT moving focus to content
+        switchView(newView, false);
+        
+        // Keep focus on the button
+        next.focus();
+      }
+      
+      // Enter/Space on chart button moves focus to canvas
+      if (btn === chartBtn && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        
+        // Ensure chart view is active and move focus to canvas
+        switchView('chart', true);
+      }
+    });
+  });
 }
 
-function switchView(view) {
+function switchView(view, moveFocus = false) {
   const chartBtn = $('#chart-view-btn');
   const tableBtn = $('#table-view-btn');
   const chartContainer = $('#chart-container');
@@ -170,7 +200,16 @@ function switchView(view) {
     legend.style.display = 'flex';
     
     announceToScreenReader('Chart view active');
-    focusElement(chartContainer, 100);
+    
+    // Only move focus to content if requested (e.g., from click or Enter key)
+    if (moveFocus) {
+      setTimeout(() => {
+        const canvas = $('#return-chart');
+        if (canvas) {
+          canvas.focus();
+        }
+      }, 100);
+    }
   } else {
     tableBtn.classList.add('active');
     tableBtn.setAttribute('aria-pressed', 'true');
@@ -182,7 +221,11 @@ function switchView(view) {
     legend.style.display = 'none';
     
     announceToScreenReader('Table view active');
-    focusElement($('#cash-flow-table'), 100);
+    
+    // Only move focus to content if requested (e.g., from click)
+    if (moveFocus) {
+      focusElement($('#cash-flow-table'), 100);
+    }
   }
 }
 
@@ -244,7 +287,7 @@ function handleResponsiveView() {
   
   if (viewportWidth < 600) {
     if (state.viewMode === 'chart') {
-      switchView('table');
+      switchView('table', false);  // Don't move focus on automatic resize
     }
     
     if (chartBtn) {
