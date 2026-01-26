@@ -21,6 +21,7 @@ function createRequiredReturnBox(calculations) {
   
   const valueContainer = createElement('div', { className: 'result-value', style: 'text-align: center;' });
   const returnValue = createElement('div', {
+    'role': 'status',
     'aria-live': 'polite',
     'aria-atomic': 'true',
     'aria-label': 'Required return',

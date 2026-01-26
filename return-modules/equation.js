@@ -12,7 +12,7 @@ export function renderStaticEquation() {
   
   // Using MathJax with TeX notation for the static equation
   const equation = `
-    $$\\color{#7a46ff}{r} = \\frac{\\color{#3c6ae5}{Div_t}\\color{#15803d}{(1 + g)}}{\\color{#b95b1d}{PV_t}} + \\color{#15803d}{g} = \\frac{\\color{#3c6ae5}{Div_{t+\\color{black}{1}}}}{\\color{#b95b1d}{PV_t}} + \\color{#15803d}{g}$$
+    $$\\color{#7a46ff}{r} = \\frac{\\color{#3c6ae5}{Div_t}\\color{black}{(1 + }\\color{#15803d}{g}\\color{black}{)}}{\\color{#b95b1d}{PV_t}} + \\color{#15803d}{g} = \\frac{\\color{#3c6ae5}{Div_{t+\\color{black}{1}}}}{\\color{#b95b1d}{PV_t}} + \\color{#15803d}{g}$$
   `;
   
   container.innerHTML = equation;
@@ -20,6 +20,40 @@ export function renderStaticEquation() {
   // Typeset the equation with MathJax
   if (window.MathJax) {
     MathJax.Hub.Queue(["Typeset", MathJax.Hub, container]);
+    
+    // Use MutationObserver to remove tabindex as MathJax adds it
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) { // Element node
+            // Check if it's a MathJax element or contains them
+            if (node.classList && node.classList.contains('MathJax')) {
+              node.removeAttribute('tabindex');
+            }
+            // Also check children
+            const mathJaxElements = node.querySelectorAll ? node.querySelectorAll('.MathJax') : [];
+            mathJaxElements.forEach(el => el.removeAttribute('tabindex'));
+          }
+        });
+      });
+    });
+    
+    observer.observe(container, { 
+      childList: true, 
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['tabindex']
+    });
+    
+    // Also remove immediately after typesetting
+    MathJax.Hub.Queue(() => {
+      const mathJaxElements = container.querySelectorAll('.MathJax');
+      mathJaxElements.forEach(el => {
+        el.removeAttribute('tabindex');
+      });
+      // Disconnect observer after cleanup
+      setTimeout(() => observer.disconnect(), 1000);
+    });
   }
 }
 
@@ -46,7 +80,7 @@ export function renderDynamicEquation(calculations, params) {
   
   // Using MathJax with TeX notation for the dynamic equation with numerical values
   const equation = `
-    $$\\color{#7a46ff}{r} = \\frac{\\color{#3c6ae5}{${d0Formatted}}\\color{#15803d}{(1 + ${gDecimal})}}{\\color{#b95b1d}{${p0Formatted}}} + \\color{#15803d}{${gFormatted}} = \\frac{\\color{#3c6ae5}{${d1Formatted}}}{\\color{#b95b1d}{${p0Formatted}}} + \\color{#15803d}{${gFormatted}} = \\color{#7a46ff}{${rFormatted}}$$
+    $$\\color{#7a46ff}{r} = \\frac{\\color{#3c6ae5}{${d0Formatted}}\\color{black}{(1 + }\\color{#15803d}{${gDecimal}}\\color{black}{)}}{\\color{#b95b1d}{${p0Formatted}}} + \\color{#15803d}{${gFormatted}} = \\frac{\\color{#3c6ae5}{${d1Formatted}}}{\\color{#b95b1d}{${p0Formatted}}} + \\color{#15803d}{${gFormatted}} = \\color{#7a46ff}{${rFormatted}}$$
   `;
   
   container.innerHTML = equation;
@@ -54,13 +88,51 @@ export function renderDynamicEquation(calculations, params) {
   // Typeset the equation with MathJax
   if (window.MathJax) {
     MathJax.Hub.Queue(["Typeset", MathJax.Hub, container]);
+    
+    // Use MutationObserver to remove tabindex as MathJax adds it
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) { // Element node
+            // Check if it's a MathJax element or contains them
+            if (node.classList && node.classList.contains('MathJax')) {
+              node.removeAttribute('tabindex');
+            }
+            // Also check children
+            const mathJaxElements = node.querySelectorAll ? node.querySelectorAll('.MathJax') : [];
+            mathJaxElements.forEach(el => el.removeAttribute('tabindex'));
+          }
+        });
+      });
+    });
+    
+    observer.observe(container, { 
+      childList: true, 
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['tabindex']
+    });
+    
+    // Also remove immediately after typesetting
+    MathJax.Hub.Queue(() => {
+      const mathJaxElements = container.querySelectorAll('.MathJax');
+      mathJaxElements.forEach(el => {
+        el.removeAttribute('tabindex');
+      });
+      // Disconnect observer after cleanup
+      setTimeout(() => observer.disconnect(), 1000);
+    });
   }
   
-  // Screen reader announcement
+  // Screen reader announcement (without $ signs to prevent MathJax processing)
+  const d0Plain = d0Formatted.replace('$', '');
+  const d1Plain = d1Formatted.replace('$', '');
+  const p0Plain = p0Formatted.replace('$', '');
+  
   const announcement = `Required return equals ${rFormatted}. ` +
-    `Calculated as: current dividend ${d0Formatted} times 1 plus growth rate ${gFormatted}, ` +
-    `divided by current price ${p0Formatted}, plus growth rate ${gFormatted}. ` +
-    `This equals next year's dividend ${d1Formatted} divided by current price ${p0Formatted}, ` +
+    `Calculated as: current dividend ${d0Plain} dollars times 1 plus growth rate ${gFormatted}, ` +
+    `divided by current price ${p0Plain} dollars, plus growth rate ${gFormatted}. ` +
+    `This equals next year's dividend ${d1Plain} dollars divided by current price ${p0Plain} dollars, ` +
     `plus growth rate ${gFormatted}, which equals ${rFormatted}.`;
   
   let liveRegion = document.getElementById('equation-live-region');

@@ -280,7 +280,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
         // Position label below the line, centered horizontally
         const labelX = (chartArea.left + chartArea.right) / 2;
         const labelY = lineYPos + 20; // Below the line
-        const labelValue = formatPercentage(requiredReturn, 1);
+        const labelValue = formatPercentage(requiredReturn, 2);
         
         // Measure text components
         ctx.font = 'italic bold 12px sans-serif';

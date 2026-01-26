@@ -5,6 +5,29 @@
    ========================================================================== */
 
 /* ==========================================================================
+   MATHJAX ACCESSIBILITY FIX
+   ========================================================================== */
+/* Ensure MathJax assistive MML (aria-hidden) is not focusable - WCAG 4.1.2 */
+mjx-assistive-mml[aria-hidden="true"] {
+  /* Use sr-only pattern to ensure it's truly hidden and non-focusable */
+  position: absolute !important;
+  clip: rect(0 0 0 0) !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Ensure no child elements are focusable either */
+mjx-assistive-mml[aria-hidden="true"] * {
+  pointer-events: none !important;
+}
+
+/* ==========================================================================
    1. REQUIRED RETURN SPECIFIC COLOR ASSIGNMENTS
    ========================================================================== */
 :root {
@@ -118,6 +141,11 @@
   font-size: 0.875rem;
   text-align: right;
   box-sizing: border-box;
+}
+
+/* Extra right padding for inputs with suffix (% sign) */
+#growth-rate.input-field-inline {
+  padding-right: 2rem;
 }
 
 .input-prefix-inline {

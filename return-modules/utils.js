@@ -140,7 +140,7 @@ export function initializeStaticEquation() {
   
   // Using MathJax with TeX notation for the static equation
   const equation = `
-    $$\\color{#7a46ff}{r} = \\frac{\\color{#3c6ae5}{Div_t}\\color{#15803d}{(1 + g)}}{\\color{#b95b1d}{PV_t}} + \\color{#15803d}{g} = \\frac{\\color{#3c6ae5}{Div_{t+1}}}{\\color{#b95b1d}{PV_t}} + \\color{#15803d}{g}$$
+    $$\\color{#7a46ff}{r} = \\frac{\\color{#3c6ae5}{Div_t}\\color{black}{(1 + }\\color{#15803d}{g}\\color{black}{)}}{\\color{#b95b1d}{PV_t}} + \\color{#15803d}{g} = \\frac{\\color{#3c6ae5}{Div_{t+\\color{black}{1}}}}{\\color{#b95b1d}{PV_t}} + \\color{#15803d}{g}$$
   `;
   
   container.innerHTML = equation;
@@ -148,6 +148,37 @@ export function initializeStaticEquation() {
   // Typeset the equation with MathJax
   if (window.MathJax) {
     MathJax.Hub.Queue(["Typeset", MathJax.Hub, container]);
+    
+    // Use MutationObserver to remove tabindex as MathJax adds it
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) {
+            if (node.classList && node.classList.contains('MathJax')) {
+              node.removeAttribute('tabindex');
+            }
+            const mathJaxElements = node.querySelectorAll ? node.querySelectorAll('.MathJax') : [];
+            mathJaxElements.forEach(el => el.removeAttribute('tabindex'));
+          }
+        });
+      });
+    });
+    
+    observer.observe(container, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['tabindex']
+    });
+    
+    // Also remove immediately after typesetting
+    MathJax.Hub.Queue(() => {
+      const mathJaxElements = container.querySelectorAll('.MathJax');
+      mathJaxElements.forEach(el => {
+        el.removeAttribute('tabindex');
+      });
+      setTimeout(() => observer.disconnect(), 1000);
+    });
   }
 }
 
@@ -158,6 +189,27 @@ export function initializeStaticEquation() {
 export function initializeCalculator() {
   // Render static equation with color-coded variables
   initializeStaticEquation();
+  
+  // Global cleanup for any MathJax tabindex issues
+  if (window.MathJax) {
+    // Aggressive cleanup function
+    const cleanupMathJax = () => {
+      document.querySelectorAll('.MathJax[tabindex]').forEach(el => {
+        el.removeAttribute('tabindex');
+      });
+    };
+    
+    // Run cleanup multiple times with delays
+    setTimeout(cleanupMathJax, 500);
+    setTimeout(cleanupMathJax, 1000);
+    setTimeout(cleanupMathJax, 2000);
+    setTimeout(cleanupMathJax, 3000);
+    
+    // Also run on any MathJax processing complete
+    MathJax.Hub.Queue(() => {
+      cleanupMathJax();
+    });
+  }
   
   console.log('Calculator initialization complete');
 }
