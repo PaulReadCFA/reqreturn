@@ -206,6 +206,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
         ctx.save();
         ctx.fillStyle = COLORS.required;
         const fontSize = Math.max(11, Math.min(14, chartArea.width / 50));
+        ctx.font = `bold ${fontSize}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
@@ -214,35 +215,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
         const y = (chartArea.top + chartArea.bottom) / 2;
         ctx.translate(x, y);
         ctx.rotate(Math.PI / 2);
-        
-        // Measure all parts first
-        ctx.font = `bold ${fontSize}px sans-serif`;
-        const part1 = 'Required return ';
-        const part1Width = ctx.measureText(part1).width;
-        
-        ctx.font = `italic bold ${fontSize}px sans-serif`;
-        const part2 = '(r)';
-        const part2Width = ctx.measureText(part2).width;
-        
-        ctx.font = `bold ${fontSize}px sans-serif`;
-        const part3 = ' %';
-        const part3Width = ctx.measureText(part3).width;
-        
-        const totalWidth = part1Width + part2Width + part3Width;
-        
-        // Draw centered
-        let currentX = -totalWidth / 2;
-        
-        ctx.font = `bold ${fontSize}px sans-serif`;
-        ctx.fillText(part1, currentX, 0);
-        currentX += part1Width;
-        
-        ctx.font = `italic bold ${fontSize}px sans-serif`;
-        ctx.fillText(part2, currentX, 0);
-        currentX += part2Width;
-        
-        ctx.font = `bold ${fontSize}px sans-serif`;
-        ctx.fillText(part3, currentX, 0);
+        ctx.fillText('Required return (r) %', 0, 0);
         
         ctx.restore();
       }
