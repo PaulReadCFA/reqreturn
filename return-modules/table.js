@@ -17,7 +17,7 @@ export function renderTable(cashFlows, requiredReturn) {
         <th scope="col" class="text-left">Year</th>
         <th scope="col" class="text-right">Required Return <span style="color: #7a46ff;">(r)</span></th>
         <th scope="col" class="text-right">Dividend <span style="color: #3c6ae5;">(Div<sub>t</sub>)</span></th>
-        <th scope="col" class="text-right">Investment <span style="color: #b95b1d;">(PV<sub>t</sub>)</span></th>
+        <th scope="col" class="text-right">Initial investment / Market price <span style="color: #b95b1d;">(PV<sub>t</sub>)</span></th>
         <th scope="col" class="text-right">Total Cash Flow</th>
         <th scope="col" class="text-right">Cumulative</th>
       </tr>

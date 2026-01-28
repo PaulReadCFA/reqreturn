@@ -22,7 +22,10 @@
       },
       displayAlign: "center",
       displayIndent: "0em",
-      showMathMenu: false
+      showMathMenu: true,
+      menuSettings: {
+        zoom: "Double-Click"
+      }
     });
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS_HTML"></script>
@@ -48,7 +51,7 @@
 
       <!-- Card 1: Dynamic Equation -->
       <section id="dynamic-equation-card" class="card">
-        <h4 class="card-title">Implied Required Return</h4>
+        <h4 class="card-title">Implied Required Return Equation with Your Inputs</h4>
         
         <!-- Dynamic equation with actual values -->
         <div class="equation-container" role="region" aria-label="Required return calculation with your values" aria-live="polite" id="dynamic-equation-container">
@@ -79,7 +82,7 @@
                     type="number" 
                     id="market-price" 
                     class="input-field-inline"
-                    min="1" max="500" step="0.1" value="54.56">
+                    min="1" max="500" step="0.1" value="54.6">
                 </div>
               </div>
 
@@ -93,7 +96,7 @@
                     type="number" 
                     id="current-dividend" 
                     class="input-field-inline"
-                    min="0" max="50" step="0.1" value="5.10">
+                    min="0" max="50" step="0.1" value="5.1">
                 </div>
               </div>
 
@@ -106,7 +109,7 @@
                     type="number" 
                     id="growth-rate" 
                     class="input-field-inline"
-                    min="0" max="25" step="0.1" value="6.40">
+                    min="0" max="25" step="0.1" value="6.4">
                   <span class="input-suffix-inline">%</span>
                 </div>
               </div>
@@ -130,7 +133,7 @@
             <div class="legend" id="chart-legend" role="list" aria-label="Chart legend">
               <span class="legend-item" role="listitem">
                 <span class="legend-color" style="background-color: var(--color-return-negative);"></span>
-                Initial investment <span style="color: var(--color-return-negative);">(PV<sub>t</sub>)</span>
+                Initial investment / Market price <span style="color: var(--color-return-negative);">(PV<sub>t</sub>)</span>
               </span>
               <span class="legend-item" role="listitem">
                 <span class="legend-color" style="background-color: var(--color-return-dividend);"></span>
@@ -138,7 +141,7 @@
               </span>
               <span class="legend-item" role="listitem">
                 <span class="legend-color legend-dashed-line" style="border-bottom: 2px dashed var(--color-return-required); background: none; width: 1.5rem; height: 0; border-left: none; border-right: none; border-top: none;"></span>
-                Required return <span style="color: var(--color-return-required);">(r)</span>
+                Required return <span style="color: var(--color-return-required); font-style: italic;">(r)</span>
               </span>
             </div>
             

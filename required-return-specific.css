@@ -52,12 +52,10 @@ mjx-assistive-mml[aria-hidden="true"] * {
 }
 
 .result-title.required-return {
-  font-size: 0.8125rem;
+  font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-purple-bold);
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .result-title.model-info {
@@ -65,7 +63,10 @@ mjx-assistive-mml[aria-hidden="true"] * {
 }
 
 .result-value {
+  font-size: 1.5rem;
+  font-weight: 700;
   color: var(--color-purple-bold);
+  line-height: 1.2;
   word-wrap: break-word;
   overflow-wrap: break-word;
   max-width: 100%;
@@ -248,6 +249,10 @@ math {
 }
 
 /* Dynamic equation - slightly smaller */
+#dynamic-equation-container {
+  min-height: 120px; /* Prevent box from jumping when equation re-renders */
+}
+
 #dynamic-equation-container math {
   font-size: 1rem;
   color: var(--color-gray-700);

@@ -5,9 +5,9 @@
 
 export const state = {
   // Required return parameters
-  marketPrice: 54.56,
-  currentDividend: 5.10,
-  growthRate: 6.40,
+  marketPrice: 54.6,
+  currentDividend: 5.1,
+  growthRate: 6.4,
   
   // UI state
   viewMode: 'chart', // 'chart' or 'table'

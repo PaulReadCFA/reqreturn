@@ -58,7 +58,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
       labels: labels,
       datasets: [
         {
-          label: 'Initial investment',
+          label: 'Initial investment / Market price',
           data: investmentData,
           backgroundColor: COLORS.negative,
           borderWidth: 0,
@@ -123,8 +123,8 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
                 return `Required return (r): ${formatPercentage(value)}`;
               }
               
-              if (isInitialYear && context.dataset.label === 'Initial investment') {
-                return `Initial investment (Pâ‚€): ${formatCurrency(value, true)}`;
+              if (isInitialYear && context.dataset.label === 'Initial investment / Market price') {
+                return `Initial investment / Market price (PV_t): ${formatCurrency(value, true)}`;
               }
               
               if (context.dataset.label === 'Dividend cash flow') {
@@ -206,7 +206,6 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
         ctx.save();
         ctx.fillStyle = COLORS.required;
         const fontSize = Math.max(11, Math.min(14, chartArea.width / 50));
-        ctx.font = `bold ${fontSize}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
@@ -215,7 +214,35 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
         const y = (chartArea.top + chartArea.bottom) / 2;
         ctx.translate(x, y);
         ctx.rotate(Math.PI / 2);
-        ctx.fillText('Required Return (%)', 0, 0);
+        
+        // Measure all parts first
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        const part1 = 'Required return ';
+        const part1Width = ctx.measureText(part1).width;
+        
+        ctx.font = `italic bold ${fontSize}px sans-serif`;
+        const part2 = '(r)';
+        const part2Width = ctx.measureText(part2).width;
+        
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        const part3 = ' %';
+        const part3Width = ctx.measureText(part3).width;
+        
+        const totalWidth = part1Width + part2Width + part3Width;
+        
+        // Draw centered
+        let currentX = -totalWidth / 2;
+        
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        ctx.fillText(part1, currentX, 0);
+        currentX += part1Width;
+        
+        ctx.font = `italic bold ${fontSize}px sans-serif`;
+        ctx.fillText(part2, currentX, 0);
+        currentX += part2Width;
+        
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        ctx.fillText(part3, currentX, 0);
         
         ctx.restore();
       }
@@ -227,7 +254,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
         const ctx = chart.ctx;
         ctx.save();
         ctx.font = 'bold 13px sans-serif';
-        ctx.fillStyle = COLORS.darkText;
+        ctx.fillStyle = '#000000'; // Black
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
         const meta0 = chart.getDatasetMeta(0);
@@ -252,12 +279,12 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
           const bar1 = meta1.data[index];
           const x = bar1.x;
           
-          // Format number with USD prefix
+          // Format number without USD prefix, 2 decimals
           const formattedValue = Math.abs(total).toLocaleString('en-US', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
           });
-          const displayValue = total < 0 ? `−USD ${formattedValue}` : `USD ${formattedValue}`;
+          const displayValue = total < 0 ? `−${formattedValue}` : formattedValue;
           
           ctx.fillText(displayValue, x, labelY);
         });
@@ -446,7 +473,7 @@ function announceDataPoint(cashFlow, total, requiredReturn) {
   }
   
   const isInitialYear = cashFlow.year === 0;
-  const investmentLabel = isInitialYear ? 'Initial investment (Pâ‚€)' : 'No investment';
+  const investmentLabel = isInitialYear ? 'Initial investment / Market price (PV_t)' : 'No investment';
   
   const announcement = `Year ${cashFlow.year}. ` +
     `Required return (r): ${requiredReturn ? formatPercentage(requiredReturn) : '0%'}. ` +
