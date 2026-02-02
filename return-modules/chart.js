@@ -124,7 +124,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
               }
               
               if (isInitialYear && context.dataset.label === 'Initial investment / Market price') {
-                return `Initial investment / Market price (PV_t): ${formatCurrency(value, true)}`;
+                return `Initial investment / Market price (PVₜ): ${formatCurrency(value, true)}`;
               }
               
               if (context.dataset.label === 'Dividend cash flow') {
@@ -160,7 +160,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
         y: {
           title: { 
             display: true, 
-            text: 'Cash Flows (USD)',
+            text: 'Cash flows (USD)',
             color: '#374151',
             font: { weight: '600' }
           },
@@ -446,7 +446,7 @@ function announceDataPoint(cashFlow, total, requiredReturn) {
   }
   
   const isInitialYear = cashFlow.year === 0;
-  const investmentLabel = isInitialYear ? 'Initial investment / Market price (PV_t)' : 'No investment';
+  const investmentLabel = isInitialYear ? 'Initial investment / Market price (PVₜ)' : 'No investment';
   
   const announcement = `Year ${cashFlow.year}. ` +
     `Required return (r): ${requiredReturn ? formatPercentage(requiredReturn) : '0%'}. ` +

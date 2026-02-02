@@ -31,6 +31,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
+  <noscript>
+    <div style="background-color: #fef2f2; border: 2px solid #b91c1c; border-radius: 0.5rem; padding: 1.5rem; margin: 2rem; text-align: center;">
+      <h2 style="color: #991b1b; margin-bottom: 0.5rem;">JavaScript Required</h2>
+      <p style="color: #7f1d1d; margin: 0;">This calculator requires JavaScript to function. Please enable JavaScript in your browser to use this tool.</p>
+    </div>
+  </noscript>
+  
   <div class="container">
     <!-- Skip Links for Accessibility -->
     <nav role="navigation" aria-label="Skip links">
@@ -42,7 +49,7 @@
       <!-- Card 0: Static Equation -->
       <section id="static-equation-card" class="card">
         <!-- Static equation with color-coded variables -->
-        <div class="equation-container" role="region" aria-label="Gordon Growth Model equation with variables">
+        <div class="equation-container">
           <div id="static-equation" style="text-align: center;">
             <!-- Populated by JavaScript -->
           </div>
@@ -54,7 +61,7 @@
         <h4 class="card-title">Implied Required Return Equation with Your Inputs</h4>
         
         <!-- Dynamic equation with actual values -->
-        <div class="equation-container" role="region" aria-label="Required return calculation with your values" aria-live="polite" id="dynamic-equation-container">
+        <div class="equation-container" aria-live="polite" id="dynamic-equation-container" tabindex="-1">
           <div id="dynamic-equation">
             <!-- Populated by JavaScript -->
           </div>
@@ -63,8 +70,12 @@
 
       <!-- Card 2: Calculator -->
       <section class="card" id="calculator" tabindex="-1">
-        <h4 class="card-title">Implied Required Return Calculator</h4>
+        <h4 class="card-title">Required Return Calculator</h4>
         <div class="card-content">
+          <p class="equation-intro">
+            Enter your stock details below. The required return calculation and visualizations will update automatically as you change the values.
+          </p>
+          
           <!-- Input controls -->
           <div class="input-section">
             <p class="sr-only" id="inputHelp">
@@ -126,7 +137,7 @@
 
       <!-- Card 3: Visualizer (full width) -->
       <section class="card" id="visualizer" tabindex="-1">
-        <h4 class="card-title">Implied Required Return Analysis</h4>
+        <h4 class="card-title">Required Return Analysis</h4>
         <div class="card-content">
           <!-- View toggle buttons -->
           <div class="view-controls">
@@ -184,11 +195,8 @@
           </div>
 
           <!-- Table container -->
-          <div id="table-container" class="table-wrapper" style="display: none;"
-               role="region"  
-               aria-label="Required return projection table"  
-               tabindex="-1">
-            <table id="cash-flow-table" class="data-table" tabindex="0">
+          <div id="table-container" class="table-wrapper" style="display: none;">
+            <table id="cash-flow-table" class="data-table">
               <!-- Populated by JavaScript -->
             </table>
           </div>

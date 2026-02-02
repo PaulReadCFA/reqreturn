@@ -250,7 +250,12 @@ math {
 
 /* Dynamic equation - slightly smaller */
 #dynamic-equation-container {
-  min-height: 120px; /* Prevent box from jumping when equation re-renders */
+  min-height: 140px; /* Prevent box from jumping when equation re-renders */
+}
+
+#dynamic-equation-container:focus {
+  outline: 2px solid var(--color-blue-interactive);
+  outline-offset: 2px;
 }
 
 #dynamic-equation-container math {
@@ -372,6 +377,12 @@ math mo {
 /* ==========================================================================
    RESPONSIVE TABLE - Required Return Specific
    ========================================================================== */
+
+/* Table container focus style */
+#table-container:focus {
+  outline: 2px solid var(--color-blue-interactive);
+  outline-offset: 2px;
+}
 
 /* View controls - prevent layout shift */
 .view-controls {

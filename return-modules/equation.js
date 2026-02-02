@@ -72,6 +72,8 @@ export function renderDynamicEquation(calculations, params) {
   
   // Format values for display
   const rFormatted = formatPercentage(requiredReturn);
+  const rDecimal = (requiredReturn / 100).toFixed(4);
+  const rPercentValue = requiredReturn.toFixed(2); // Just the number without %
   const d1Formatted = formatCurrency(d1);
   const d0Formatted = formatCurrency(currentDividend);
   const p0Formatted = formatCurrency(marketPrice);
@@ -80,7 +82,7 @@ export function renderDynamicEquation(calculations, params) {
   
   // Using MathJax with TeX notation for the dynamic equation with numerical values
   const equation = `
-    $$\\color{#7a46ff}{r} = \\frac{\\color{#3c6ae5}{${d0Formatted}}\\color{black}{(1 + }\\color{#15803d}{${gDecimal}}\\color{black}{)}}{\\color{#b95b1d}{${p0Formatted}}} + \\color{#15803d}{${gFormatted}} = \\frac{\\color{#3c6ae5}{${d1Formatted}}}{\\color{#b95b1d}{${p0Formatted}}} + \\color{#15803d}{${gFormatted}} = \\color{#7a46ff}{${rFormatted}}$$
+    $$\\color{#7a46ff}{r} = \\frac{\\color{#3c6ae5}{${d0Formatted}}\\color{black}{(1 + }\\color{#15803d}{${gDecimal}}\\color{black}{)}}{\\color{#b95b1d}{${p0Formatted}}} + \\color{#15803d}{${gDecimal}} = \\frac{\\color{#3c6ae5}{${d1Formatted}}}{\\color{#b95b1d}{${p0Formatted}}} + \\color{#15803d}{${gDecimal}} = \\color{#7a46ff}{${rDecimal}} = \\color{#7a46ff}{${rPercentValue}\\%}$$
   `;
   
   container.innerHTML = equation;

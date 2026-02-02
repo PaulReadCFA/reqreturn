@@ -51,20 +51,28 @@ function init() {
 }
 
 function setupSkipLinks() {
-  const skipToVisualizer = document.querySelector('a[href="#visualizer"]');
+  const skipToTable = document.querySelector('a[href="#cash-flow-table"]');
   
-  if (skipToVisualizer) {
-    listen(skipToVisualizer, 'click', (e) => {
+  if (skipToTable) {
+    listen(skipToTable, 'click', (e) => {
       e.preventDefault();
-      switchView('table', true);  // Move focus when using skip link
+      
+      // Click the table button to switch to table view
+      const tableBtn = $('#table-view-btn');
+      if (tableBtn) {
+        tableBtn.click(); // Switch to table view
+        
+        // Focus the table button
+        // Next tab will wrap to top (expected - no more interactive elements)
+        // Screen reader users can use table navigation (Ctrl+Alt+Arrow keys) to explore table
+        setTimeout(() => tableBtn.focus(), 100);
+      }
+      
+      // Scroll to visualizer section
       const section = $('#visualizer');
       if (section) {
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-      setTimeout(() => {
-        const table = $('#cash-flow-table');
-        if (table) table.focus();
-      }, 400);
     });
   }
 }
@@ -222,10 +230,8 @@ function switchView(view, moveFocus = false) {
     
     announceToScreenReader('Table view active');
     
-    // Only move focus to content if requested (e.g., from click)
-    if (moveFocus) {
-      focusElement($('#cash-flow-table'), 100);
-    }
+    // Don't focus anything - let tab order continue naturally
+    // The table is already in the DOM and screen readers can navigate it
   }
 }
 
