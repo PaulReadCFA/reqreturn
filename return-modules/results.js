@@ -22,9 +22,7 @@ function createRequiredReturnBox(calculations) {
   const valueContainer = createElement('div', { className: 'result-value' });
   const returnValue = createElement('div', {
     'role': 'status',
-    'aria-live': 'polite',
-    'aria-atomic': 'true',
-    'aria-label': 'Required return'
+    'aria-atomic': 'true'
   }, formatPercentage(calculations.requiredReturn));
   valueContainer.appendChild(returnValue);
   box.appendChild(valueContainer);
