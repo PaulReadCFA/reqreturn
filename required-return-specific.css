@@ -7,9 +7,7 @@
 /* ==========================================================================
    MATHJAX ACCESSIBILITY FIX
    ========================================================================== */
-/* Ensure MathJax assistive MML (aria-hidden) is not focusable - WCAG 4.1.2 */
 mjx-assistive-mml[aria-hidden="true"] {
-  /* Use sr-only pattern to ensure it's truly hidden and non-focusable */
   position: absolute !important;
   clip: rect(0 0 0 0) !important;
   width: 1px !important;
@@ -21,8 +19,6 @@ mjx-assistive-mml[aria-hidden="true"] {
   border: 0 !important;
   pointer-events: none !important;
 }
-
-/* Ensure no child elements are focusable either */
 mjx-assistive-mml[aria-hidden="true"] * {
   pointer-events: none !important;
 }
@@ -31,37 +27,32 @@ mjx-assistive-mml[aria-hidden="true"] * {
    1. REQUIRED RETURN SPECIFIC COLOR ASSIGNMENTS
    ========================================================================== */
 :root {
-  /* Required Return Calculator Specific Colors */
-  --color-return-required: var(--color-purple-bold);        /* #7a46ff - Required return (r) */
-  --color-return-dividend: var(--color-blue-interactive);   /* #3c6ae5 - Dividend payments (D) */
-  --color-return-negative: var(--color-orange-deep);        /* #b95b1d - Current price (P₀) */
-  --color-return-growth: var(--color-green-data);           /* #15803d - Growth rate (g) */
+  --color-return-required: var(--color-purple-bold);
+  --color-return-dividend: var(--color-blue-interactive);
+  --color-return-negative: var(--color-orange-deep);
+  --color-return-growth: var(--color-green-data);
 }
 
 /* ==========================================================================
-   2. RESULT BOXES â€“ Required Return Specific
+   2. RESULT BOXES - Required Return Specific
    ========================================================================== */
 .result-box.required-return {
   background-color: var(--color-bg-purple);
   border-color: var(--color-purple-bold);
 }
-
 .result-box.model-info {
   background-color: var(--color-bg-teal);
   border-color: var(--color-teal-data);
 }
-
 .result-title.required-return {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-purple-bold);
   margin-bottom: 0.5rem;
 }
-
 .result-title.model-info {
   color: var(--color-teal-data);
 }
-
 .result-value {
   font-size: 1.5rem;
   font-weight: 700;
@@ -71,14 +62,12 @@ mjx-assistive-mml[aria-hidden="true"] * {
   overflow-wrap: break-word;
   max-width: 100%;
 }
-
 .result-value-small {
   font-size: 0.875rem;
   color: var(--color-gray-700);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-weight: 400;
 }
-
 .analysis-content {
   font-size: 0.9375rem;
   color: var(--color-gray-800);
@@ -86,12 +75,10 @@ mjx-assistive-mml[aria-hidden="true"] * {
   flex-direction: column;
   gap: 0.5rem;
 }
-
 .analysis-type {
   font-weight: 600;
   font-size: 1rem;
 }
-
 .analysis-details {
   padding-top: 0.5rem;
   border-top: 1px solid var(--color-gray-300);
@@ -102,29 +89,26 @@ mjx-assistive-mml[aria-hidden="true"] * {
 }
 
 /* ==========================================================================
-   3. INPUT LAYOUT â€“ Inline with Prefix/Suffix
+   3. INPUT LAYOUT - Inline with Prefix/Suffix
    ========================================================================== */
 .input-group-inline {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 2rem 1.5rem;
+  gap: 0.875rem 1.25rem;
 }
-
 .input-inline {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
   white-space: nowrap;
 }
-
 .input-label-inline {
   font-size: 0.875rem;
   color: var(--color-gray-700);
-  min-width: 140px;
   font-weight: 500;
+  white-space: nowrap;
 }
-
 .input-with-suffix-inline {
   display: flex;
   align-items: center;
@@ -132,30 +116,39 @@ mjx-assistive-mml[aria-hidden="true"] * {
   width: 7rem;
   position: relative;
 }
-
 .input-field-inline {
   flex: 1;
   width: 100%;
   padding: 0.4rem 0.5rem;
-  border: 1px solid var(--color-gray-300);
+  border: 1px solid #8b93a7;
   border-radius: 0.375rem;
   font-size: 0.875rem;
   text-align: right;
   box-sizing: border-box;
+  font-family: 'Lato', sans-serif;
 }
-
-/* Extra right padding for inputs with suffix (% sign) */
+.input-field-inline:hover {
+  border-color: var(--color-gray-600);
+}
+.input-field-inline:focus {
+  outline: none;
+  border-color: var(--color-blue-interactive);
+  box-shadow: 0 0 0 2px rgba(60, 106, 229, 0.1);
+}
+.input-field-inline.error {
+  border-color: var(--color-red-700) !important;
+  box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.2);
+}
 #growth-rate.input-field-inline {
   padding-right: 2rem;
 }
-
 .input-prefix-inline {
   color: var(--color-gray-500);
   font-weight: 500;
   font-size: 0.875rem;
-  margin-right: 0.25rem;
+  margin-right: 0.2rem;
+  flex-shrink: 0;
 }
-
 .input-suffix-inline {
   position: absolute;
   right: 0.4rem;
@@ -168,35 +161,19 @@ mjx-assistive-mml[aria-hidden="true"] * {
   font-size: 0.875rem;
   font-weight: 500;
 }
-
-/* When we have a prefix, adjust the input padding */
-.input-with-suffix-inline .input-prefix-inline ~ .input-field-inline {
-  padding-left: 0.5rem;
-}
-
 @media (max-width: 640px) {
   .input-group-inline {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 0.75rem;
   }
-  
-  .input-inline {
-    width: 100%;
-  }
-  
-  .input-with-suffix-inline {
-    width: 100%;
-    max-width: 12rem;
-  }
-  
-  .input-label-inline {
-    min-width: auto;
-  }
+  .input-inline { width: 100%; }
+  .input-with-suffix-inline { width: 100%; max-width: 10rem; }
+  .input-label-inline { min-width: auto; }
 }
 
 /* ==========================================================================
-   4. EQUATION DISPLAY â€“ Required Return Specific
+   4. EQUATION DISPLAY - Required Return Specific
    ========================================================================== */
 .equation-container {
   padding: 1rem;
@@ -211,36 +188,18 @@ mjx-assistive-mml[aria-hidden="true"] * {
   container-type: inline-size;
   container-name: equation;
 }
-
-/* Responsive equation scaling */
 @media (max-width: 768px) {
-  .equation-container math {
-    font-size: 0.95em;
-  }
-  .equation-container {
-    padding: 0.75rem;
-  }
+  .equation-container math { font-size: 0.95em; }
+  .equation-container { padding: 0.75rem; }
 }
-
 @media (max-width: 640px) {
-  .equation-container math {
-    font-size: 0.85em;
-  }
-  .equation-container {
-    padding: 0.5rem;
-  }
+  .equation-container math { font-size: 0.85em; }
+  .equation-container { padding: 0.5rem; }
 }
-
 @media (max-width: 480px) {
-  .equation-container math {
-    font-size: 0.75em;
-  }
-  .equation-container {
-    padding: 0.25rem;
-  }
+  .equation-container math { font-size: 0.75em; }
+  .equation-container { padding: 0.25rem; }
 }
-
-/* MathML styling */
 math {
   font-size: 1.125rem;
   font-weight: 600;
@@ -248,103 +207,43 @@ math {
   margin: 0.5rem 0;
 }
 
-/* Dynamic equation - slightly smaller */
+/* Dynamic equation - hide during MathJax re-render to prevent raw TeX flash */
 #dynamic-equation-container {
-  min-height: 140px; /* Prevent box from jumping when equation re-renders */
+  min-height: 140px;
+  transition: opacity 0.15s ease;
 }
-
 #dynamic-equation-container:focus {
   outline: 2px solid var(--color-blue-interactive);
   outline-offset: 2px;
 }
-
 #dynamic-equation-container math {
   font-size: 1rem;
   color: var(--color-gray-700);
 }
+@media (max-width: 900px) { #dynamic-equation-container math { font-size: 0.9em; } }
+@media (max-width: 768px) { #dynamic-equation-container math { font-size: 0.8em; } }
+@media (max-width: 640px) { #dynamic-equation-container math { font-size: 0.7em; } }
+@media (max-width: 480px) { #dynamic-equation-container math { font-size: 0.6em; } }
+@media (max-width: 400px) { #dynamic-equation-container math { font-size: 0.55em; } }
+@media (max-width: 360px) { #dynamic-equation-container math { font-size: 0.5em; } }
+@container equation (max-width: 700px) { #dynamic-equation-container math { font-size: 0.85em; } }
+@container equation (max-width: 600px) { #dynamic-equation-container math { font-size: 0.75em; } }
+@container equation (max-width: 500px) { #dynamic-equation-container math { font-size: 0.65em; } }
+@container equation (max-width: 400px) { #dynamic-equation-container math { font-size: 0.55em; } }
+@container equation (max-width: 320px) { #dynamic-equation-container math { font-size: 0.5em; } }
+math msub mtext { font-size: 0.75em; }
+math mfrac { margin: 0 0.2em; }
+math mo { margin: 0 0.1em; }
 
-/* Dynamic equation responsive scaling */
-@media (max-width: 900px) {
-  #dynamic-equation-container math {
-    font-size: 0.9em;
-  }
-}
-
-@media (max-width: 768px) {
-  #dynamic-equation-container math {
-    font-size: 0.8em;
-  }
-}
-
-@media (max-width: 640px) {
-  #dynamic-equation-container math {
-    font-size: 0.7em;
-  }
-}
-
-@media (max-width: 480px) {
-  #dynamic-equation-container math {
-    font-size: 0.6em;
-  }
-}
-
-@media (max-width: 400px) {
-  #dynamic-equation-container math {
-    font-size: 0.55em;
-  }
-}
-
-@media (max-width: 360px) {
-  #dynamic-equation-container math {
-    font-size: 0.5em;
-  }
-}
-
-/* Container queries for zoom support */
-@container equation (max-width: 700px) {
-  #dynamic-equation-container math {
-    font-size: 0.85em;
-  }
-}
-
-@container equation (max-width: 600px) {
-  #dynamic-equation-container math {
-    font-size: 0.75em;
-  }
-}
-
-@container equation (max-width: 500px) {
-  #dynamic-equation-container math {
-    font-size: 0.65em;
-  }
-}
-
-@container equation (max-width: 400px) {
-  #dynamic-equation-container math {
-    font-size: 0.55em;
-  }
-}
-
-@container equation (max-width: 320px) {
-  #dynamic-equation-container math {
-    font-size: 0.5em;
-  }
-}
-
-math msub mtext {
-  font-size: 0.75em;
-}
-
-math mfrac {
-  margin: 0 0.2em;
-}
-
-math mo {
-  margin: 0 0.1em;
+/* ==========================================================================
+   5. CHART LEGEND REGION
+   ========================================================================== */
+.chart-legend-region {
+  margin-bottom: 0.75rem;
 }
 
 /* ==========================================================================
-   5. CHART ACCESSIBILITY OVERLAY
+   6. CHART ACCESSIBILITY OVERLAY
    ========================================================================== */
 .chart-a11y-overlay .chart-point:focus-visible {
   outline: 2px solid var(--color-blue-interactive);
@@ -352,7 +251,7 @@ math mo {
 }
 
 /* ==========================================================================
-   6. MODEL INFO LIST
+   7. MODEL INFO LIST
    ========================================================================== */
 .model-info-list {
   list-style: none;
@@ -362,13 +261,11 @@ math mo {
   flex-direction: column;
   gap: 0.375rem;
 }
-
 .model-info-list li {
   font-size: 0.8125rem;
   color: var(--color-gray-700);
   line-height: 1.4;
 }
-
 .model-info-list li strong {
   font-weight: 600;
   color: var(--color-gray-800);
@@ -377,38 +274,27 @@ math mo {
 /* ==========================================================================
    RESPONSIVE TABLE - Required Return Specific
    ========================================================================== */
-
-/* Table container focus style */
 #table-container:focus {
   outline: 2px solid var(--color-blue-interactive);
   outline-offset: 2px;
 }
-
-/* View controls - prevent layout shift */
 .view-controls {
   min-height: 44px;
   align-items: center;
 }
-
 .view-controls .button-group {
   margin-left: auto;
   flex-shrink: 0;
 }
-
-/* At very narrow widths, adjust font sizes */
-@media (max-width: 480px) {
-  .data-table {
-    font-size: 0.6875rem;
-  }
+@media (max-width: 480px) { .data-table { font-size: 0.6875rem; } }
+@media (max-width: 400px) {
+  .data-table { font-size: 0.625rem; }
+  .data-table th, .data-table td { padding: 0.25rem 0.3rem; }
 }
 
-@media (max-width: 400px) {
-  .data-table {
-    font-size: 0.625rem;
-  }
-  
-  .data-table th,
-  .data-table td {
-    padding: 0.25rem 0.3rem;
-  }
+/* ==========================================================================
+   REDUCED MOTION - disable equation fade
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  #dynamic-equation-container { transition: none !important; }
 }

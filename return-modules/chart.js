@@ -7,51 +7,75 @@ import { formatCurrency, formatPercentage } from './utils.js';
 
 // Required Return Colors
 const COLORS = {
-  dividend: '#3c6ae5',    // Blue - matches --color-return-dividend
-  negative: '#b95b1d',    // Orange - matches --color-return-negative (P₀)
-  required: '#7a46ff',    // Purple - matches --color-return-required (r)
+  dividend: '#3c6ae5',
+  negative: '#b95b1d',
+  required: '#6b35e8',
   darkText: '#06005a'
 };
+
+// Unicode italic math characters for canvas rendering
+const ITALICr = '\u{1D45F}';   // 𝑟
+const ITALICt = '\u{1D461}';   // 𝑡
+const ITALICg = '\u{1D454}';   // 𝑔
 
 let chartInstance = null;
 let currentFocusIndex = 0;
 let isKeyboardMode = false;
 
 /**
+ * Check if user prefers reduced motion
+ */
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/**
+ * Calculate a "nice" y-axis maximum that aligns with tick increments of 5
+ */
+function niceAxisMax(value) {
+  const raw = Math.max(15, value * 1.15);
+  return Math.ceil(raw / 5) * 5;
+}
+
+/**
+ * Format value as USD string (no space between prefix and value)
+ */
+function formatUSD(value) {
+  const absValue = Math.abs(value);
+  const formatted = absValue.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+  if (value < 0) return `\u2212USD${formatted}`;
+  return `USD${formatted}`;
+}
+
+/**
  * Create or update required return chart
- * @param {Array} cashFlows - Array of cash flow objects
- * @param {boolean} showLabels - Whether to show value labels
- * @param {number} requiredReturn - Required return percentage
  */
 export function renderChart(cashFlows, showLabels = true, requiredReturn = null) {
   const canvas = document.getElementById('return-chart');
-  
-  if (!canvas) {
-    console.error('Chart canvas not found');
-    return;
-  }
-  
+  if (!canvas) { console.error('Chart canvas not found'); return; }
+
   canvas.setAttribute('tabindex', '0');
   canvas.setAttribute('role', 'img');
   canvas.setAttribute('aria-roledescription', 'interactive chart');
   canvas.setAttribute(
     'aria-label',
-    'Interactive required return chart showing initial investment and projected dividend payments over 10 years with calculated required return.'
+    `Interactive required return chart. Use arrow keys to navigate between years, Home for year 0, End for the last year.`
   );
 
   const ctx = canvas.getContext('2d');
-  
   const labels = cashFlows.map(cf => cf.year.toString());
   const dividendData = cashFlows.map(cf => cf.dividend);
   const investmentData = cashFlows.map(cf => cf.investment);
   const totalData = cashFlows.map(cf => cf.totalCashFlow);
-  
-  if (chartInstance) {
-    chartInstance.destroy();
-  }
-  
+  const reduceMotion = prefersReducedMotion();
+  const axisMax = requiredReturn ? niceAxisMax(requiredReturn) : 20;
+
+  if (chartInstance) { chartInstance.destroy(); }
   currentFocusIndex = 0;
-  
+
   chartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -93,10 +117,8 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      interaction: {
-        mode: 'index',
-        intersect: false
-      },
+      animation: reduceMotion ? { duration: 0 } : { duration: 400 },
+      interaction: { mode: 'index', intersect: false },
       onHover: (event, activeElements) => {
         if (isKeyboardMode && document.activeElement === canvas) return;
         if (activeElements.length > 0) {
@@ -106,38 +128,40 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
       },
       plugins: {
         title: { display: false },
+        subtitle: {
+          display: true,
+          text: 'Dividend stream continues indefinitely; first 10 years shown.',
+          position: 'bottom',
+          color: '#6b7280',
+          font: { size: 12, style: 'italic', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" },
+          padding: { top: 8, bottom: 0 }
+        },
         legend: { display: false },
         tooltip: {
           usePointStyle: true,
           callbacks: {
-            title: (context) => {
-              const index = context[0].dataIndex;
-              return `Year: ${cashFlows[index].year}`;
-            },
+            title: (context) => `Year: ${cashFlows[context[0].dataIndex].year}`,
             label: (context) => {
               const value = context.parsed.y;
               const index = context.dataIndex;
               const isInitialYear = index === 0;
-              
+
               if (context.dataset.label === 'Required return (r)') {
-                return `Required return (r): ${formatPercentage(value)}`;
+                return `Required return (\u{1D45F}): ${formatPercentage(value)}`;
               }
-              
               if (isInitialYear && context.dataset.label === 'Initial investment / Market price') {
-                return `Initial investment / Market price (PVₜ): ${formatCurrency(value, true)}`;
+                return `Initial investment / Market price (PV\u{1D461}): ${formatUSD(value)}`;
               }
-              
               if (context.dataset.label === 'Dividend cash flow') {
-                return `Dividend (D): ${formatCurrency(value, true)}`;
+                return `Dividend (Div\u{1D461}): ${formatUSD(value)}`;
               }
-              
-              return `${context.dataset.label}: ${formatCurrency(value, true)}`;
+              return `${context.dataset.label}: ${formatUSD(value)}`;
             },
             footer: (context) => {
               const index = context[0].dataIndex;
               const total = totalData[index];
               if (context[0].dataset.label !== 'Required return (r)') {
-                return `Total: ${formatCurrency(total, true)}`;
+                return `Total: ${formatUSD(total)}`;
               }
               return '';
             }
@@ -146,36 +170,33 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
       },
       scales: {
         x: {
-          title: { 
-            display: true, 
+          title: {
+            display: true,
             text: 'Years',
             color: '#374151',
-            font: { weight: '600' }
+            font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" }
           },
           ticks: {
-            color: '#374151'
+            color: '#374151',
+            font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" }
           },
           grid: { display: false }
         },
         y: {
-          title: { 
-            display: true, 
+          title: {
+            display: true,
             text: 'Cash flows (USD)',
             color: '#374151',
-            font: { weight: '600' }
+            font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" }
           },
           position: 'left',
           ticks: {
-            callback: function(value) { 
-              return value.toLocaleString('en-US', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-              });
-            },
+            callback: (value) => value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
             color: '#374151',
             autoSkip: true,
             maxRotation: 0,
-            minRotation: 0
+            minRotation: 0,
+            font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" }
           },
           grid: { color: 'rgba(0, 0, 0, 0.05)' }
         },
@@ -183,13 +204,15 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
           title: { display: false },
           position: 'right',
           min: 0,
-          max: requiredReturn ? Math.max(15, requiredReturn * 1.3) : 15,
+          max: axisMax,
           ticks: {
-            callback: function(value) { return value.toFixed(1); },
+            stepSize: 5,
+            callback: (value) => value.toFixed(0),
             color: COLORS.required,
-            autoSkip: true,
+            autoSkip: false,
             maxRotation: 0,
-            minRotation: 0
+            minRotation: 0,
+            font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" }
           },
           grid: { display: false }
         }
@@ -198,198 +221,157 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
         padding: { left: 10, right: 55, top: showLabels ? 35 : 15, bottom: 10 }
       }
     },
-    plugins: [{
-      id: 'verticalY2Title',
-      afterDraw: (chart) => {
-        const ctx = chart.ctx;
-        const chartArea = chart.chartArea;
-        ctx.save();
-        ctx.fillStyle = COLORS.required;
-        const fontSize = Math.max(11, Math.min(14, chartArea.width / 50));
-        ctx.font = `bold ${fontSize}px sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        
-        // Draw vertical text on right side (rotated upward)
-        const x = chartArea.right + 48;
-        const y = (chartArea.top + chartArea.bottom) / 2;
-        ctx.translate(x, y);
-        ctx.rotate(Math.PI / 2);
-        ctx.fillText('Required return (r) %', 0, 0);
-        
-        ctx.restore();
-      }
-    },
-    {
-      id: 'stackedBarLabels',
-      afterDatasetsDraw: (chart) => {
-        if (!showLabels) return;
-        const ctx = chart.ctx;
-        ctx.save();
-        ctx.font = 'bold 13px sans-serif';
-        ctx.fillStyle = '#000000'; // Black
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        const meta0 = chart.getDatasetMeta(0);
-        const meta1 = chart.getDatasetMeta(1);
-        
-        // Find the highest positive bar across all data points
-        let highestPositiveY = chart.scales.y.top;
-        chart.data.labels.forEach((label, index) => {
-          const total = totalData[index];
-          if (total > 0 && meta0.data[index] && meta1.data[index]) {
-            const topY = Math.min(meta0.data[index].y, meta1.data[index].y);
-            highestPositiveY = Math.min(highestPositiveY, topY);
-          }
-        });
-        
-        // Draw all labels at consistent height
-        const labelY = highestPositiveY - 8;
-        chart.data.labels.forEach((label, index) => {
-          const total = totalData[index];
-          if (Math.abs(total) < 0.01) return;
-          if (!meta0.data[index] || !meta1.data[index]) return;
-          const bar1 = meta1.data[index];
-          const x = bar1.x;
-          
-          // Format number without USD prefix, 2 decimals
-          const formattedValue = Math.abs(total).toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+    plugins: [
+      {
+        id: 'verticalY2Title',
+        afterDraw: (chart) => {
+          const ctx = chart.ctx;
+          const chartArea = chart.chartArea;
+          ctx.save();
+          ctx.fillStyle = COLORS.required;
+          const fontSize = Math.max(11, Math.min(14, chartArea.width / 50));
+          ctx.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          const x = chartArea.right + 48;
+          const y = (chartArea.top + chartArea.bottom) / 2;
+          ctx.translate(x, y);
+          ctx.rotate(Math.PI / 2);
+          // Use italic r (unicode) in axis label
+          ctx.fillText(`Required return (\u{1D45F}) %`, 0, 0);
+          ctx.restore();
+        }
+      },
+      {
+        id: 'stackedBarLabels',
+        afterDatasetsDraw: (chart) => {
+          if (!showLabels) return;
+          const ctx = chart.ctx;
+          ctx.save();
+          ctx.font = "700 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif";
+          ctx.fillStyle = '#000000';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          const meta0 = chart.getDatasetMeta(0);
+          const meta1 = chart.getDatasetMeta(1);
+          let highestPositiveY = chart.scales.y.top;
+          chart.data.labels.forEach((label, index) => {
+            const total = totalData[index];
+            if (total > 0 && meta0.data[index] && meta1.data[index]) {
+              const topY = Math.min(meta0.data[index].y, meta1.data[index].y);
+              highestPositiveY = Math.min(highestPositiveY, topY);
+            }
           });
-          const displayValue = total < 0 ? `−${formattedValue}` : formattedValue;
-          
-          ctx.fillText(displayValue, x, labelY);
-        });
-        ctx.restore();
+          const labelY = highestPositiveY - 8;
+          chart.data.labels.forEach((label, index) => {
+            const total = totalData[index];
+            if (Math.abs(total) < 0.01) return;
+            if (!meta0.data[index] || !meta1.data[index]) return;
+            const bar1 = meta1.data[index];
+            const x = bar1.x;
+            const formattedValue = Math.abs(total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const displayValue = total < 0 ? `\u2212${formattedValue}` : formattedValue;
+            ctx.fillText(displayValue, x, labelY);
+          });
+          ctx.restore();
+        }
+      },
+      {
+        id: 'requiredReturnLabel',
+        afterDatasetsDraw: (chart) => {
+          if (!requiredReturn) return;
+          const ctx = chart.ctx;
+          const chartArea = chart.chartArea;
+          const yScale = chart.scales.y2;
+          const lineYPos = yScale.getPixelForValue(requiredReturn);
+          ctx.save();
+          const labelX = (chartArea.left + chartArea.right) / 2;
+          const labelY = lineYPos + 20;
+          const labelValue = formatPercentage(requiredReturn, 2);
+          ctx.font = `italic 700 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif`;
+          const rMetrics = ctx.measureText('\u{1D45F}');
+          ctx.font = "700 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif";
+          const equalsMetrics = ctx.measureText(' = ');
+          const valueMetrics = ctx.measureText(labelValue);
+          const totalWidth = rMetrics.width + equalsMetrics.width + valueMetrics.width;
+          const padding = 5;
+          const boxX = labelX - totalWidth / 2 - padding;
+          const boxY = labelY - 12 / 2 - padding;
+          const boxWidth = totalWidth + padding * 2;
+          const boxHeight = 12 + padding * 2;
+          ctx.fillStyle = 'white';
+          ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+          ctx.strokeStyle = COLORS.required;
+          ctx.lineWidth = 2;
+          ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+          let currentX = labelX - totalWidth / 2;
+          ctx.fillStyle = COLORS.required;
+          ctx.font = "italic 700 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif";
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('\u{1D45F}', currentX, labelY);
+          currentX += rMetrics.width;
+          ctx.font = "700 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif";
+          ctx.fillText(' = ', currentX, labelY);
+          currentX += equalsMetrics.width;
+          ctx.fillText(labelValue, currentX, labelY);
+          ctx.restore();
+        }
+      },
+      {
+        id: 'keyboardFocus',
+        afterDatasetsDraw: (chart) => {
+          if (document.activeElement !== canvas) return;
+          const ctx = chart.ctx;
+          const meta0 = chart.getDatasetMeta(0);
+          const meta1 = chart.getDatasetMeta(1);
+          if (!meta0.data[currentFocusIndex] || !meta1.data[currentFocusIndex]) return;
+          const bar0 = meta0.data[currentFocusIndex];
+          const bar1 = meta1.data[currentFocusIndex];
+          const allYValues = [bar0.y, bar0.base, bar1.y, bar1.base];
+          const topY = Math.min(...allYValues);
+          const bottomY = Math.max(...allYValues);
+          ctx.save();
+          ctx.strokeStyle = COLORS.darkText;
+          ctx.lineWidth = 3;
+          ctx.setLineDash([5, 5]);
+          const x = bar1.x - bar1.width / 2 - 4;
+          const y = topY - 4;
+          const width = bar1.width + 8;
+          const height = bottomY - topY + 8;
+          ctx.strokeRect(x, y, width, height);
+          ctx.restore();
+        }
       }
-    },
-    {
-      id: 'requiredReturnLabel',
-      afterDatasetsDraw: (chart) => {
-        if (!requiredReturn) return;
-        const ctx = chart.ctx;
-        const chartArea = chart.chartArea;
-        const yScale = chart.scales.y2;
-        
-        // Get y position for required return value
-        const lineYPos = yScale.getPixelForValue(requiredReturn);
-        
-        ctx.save();
-        
-        // Position label below the line, centered horizontally
-        const labelX = (chartArea.left + chartArea.right) / 2;
-        const labelY = lineYPos + 20; // Below the line
-        const labelValue = formatPercentage(requiredReturn, 2);
-        
-        // Measure text components
-        ctx.font = 'italic bold 12px sans-serif';
-        const rMetrics = ctx.measureText('r');
-        ctx.font = 'bold 12px sans-serif';
-        const equalsMetrics = ctx.measureText(' = ');
-        const valueMetrics = ctx.measureText(labelValue);
-        
-        const totalWidth = rMetrics.width + equalsMetrics.width + valueMetrics.width;
-        
-        // Draw white background box
-        const padding = 5;
-        const boxX = labelX - totalWidth / 2 - padding;
-        const boxY = labelY - 12 / 2 - padding;
-        const boxWidth = totalWidth + padding * 2;
-        const boxHeight = 12 + padding * 2;
-        
-        ctx.fillStyle = 'white';
-        ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
-        
-        // Draw purple border
-        ctx.strokeStyle = COLORS.required;
-        ctx.lineWidth = 2;
-        ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
-        
-        // Draw text components
-        let currentX = labelX - totalWidth / 2;
-        
-        // Draw italic "r"
-        ctx.fillStyle = COLORS.required;
-        ctx.font = 'italic bold 12px sans-serif';
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('r', currentX, labelY);
-        currentX += rMetrics.width;
-        
-        // Draw " = "
-        ctx.font = 'bold 12px sans-serif';
-        ctx.fillText(' = ', currentX, labelY);
-        currentX += equalsMetrics.width;
-        
-        // Draw value
-        ctx.fillText(labelValue, currentX, labelY);
-        
-        ctx.restore();
-      }
-    },
-    {
-      id: 'keyboardFocus',
-      afterDatasetsDraw: (chart) => {
-        if (document.activeElement !== canvas) return;
-        const ctx = chart.ctx;
-        const meta0 = chart.getDatasetMeta(0);
-        const meta1 = chart.getDatasetMeta(1);
-        if (!meta0.data[currentFocusIndex] || !meta1.data[currentFocusIndex]) return;
-        const bar0 = meta0.data[currentFocusIndex];
-        const bar1 = meta1.data[currentFocusIndex];
-        const allYValues = [bar0.y, bar0.base, bar1.y, bar1.base];
-        const topY = Math.min(...allYValues);
-        const bottomY = Math.max(...allYValues);
-        ctx.save();
-        ctx.strokeStyle = COLORS.darkText;
-        ctx.lineWidth = 3;
-        ctx.setLineDash([5, 5]);
-        const x = bar1.x - bar1.width / 2 - 4;
-        const y = topY - 4;
-        const width = bar1.width + 8;
-        const height = bottomY - topY + 8;
-        ctx.strokeRect(x, y, width, height);
-        ctx.restore();
-      }
-    }]
+    ]
   });
-  
+
   setupKeyboardNavigation(canvas, cashFlows, totalData, requiredReturn);
 }
 
 function setupKeyboardNavigation(canvas, cashFlows, totalData, requiredReturn) {
   const oldListener = canvas._keydownListener;
   if (oldListener) canvas.removeEventListener('keydown', oldListener);
-  
+
   const keydownListener = (e) => {
     const maxIndex = cashFlows.length - 1;
     let newIndex = currentFocusIndex;
     isKeyboardMode = true;
-    
-    switch(e.key) {
-      case 'ArrowRight':
-      case 'ArrowDown':
+
+    switch (e.key) {
+      case 'ArrowRight': case 'ArrowDown':
         e.preventDefault();
         newIndex = Math.min(currentFocusIndex + 1, maxIndex);
         break;
-      case 'ArrowLeft':
-      case 'ArrowUp':
+      case 'ArrowLeft': case 'ArrowUp':
         e.preventDefault();
         newIndex = Math.max(currentFocusIndex - 1, 0);
         break;
-      case 'Home':
-        e.preventDefault();
-        newIndex = 0;
-        break;
-      case 'End':
-        e.preventDefault();
-        newIndex = maxIndex;
-        break;
-      default:
-        return;
+      case 'Home': e.preventDefault(); newIndex = 0; break;
+      case 'End': e.preventDefault(); newIndex = maxIndex; break;
+      default: return;
     }
-    
+
     if (newIndex !== currentFocusIndex) {
       currentFocusIndex = newIndex;
       chartInstance.update('none');
@@ -397,26 +379,24 @@ function setupKeyboardNavigation(canvas, cashFlows, totalData, requiredReturn) {
       showTooltipAtIndex(currentFocusIndex);
     }
   };
-  
+
   canvas._keydownListener = keydownListener;
   canvas.addEventListener('keydown', keydownListener);
-  
+
   const focusListener = () => {
     isKeyboardMode = true;
     showTooltipAtIndex(currentFocusIndex);
     announceDataPoint(cashFlows[currentFocusIndex], totalData[currentFocusIndex], requiredReturn);
   };
-  
   const blurListener = () => {
-    chartInstance.tooltip.setActiveElements([], {x: 0, y: 0});
+    chartInstance.tooltip.setActiveElements([], { x: 0, y: 0 });
     chartInstance.update('none');
   };
-  
   canvas._focusListener = focusListener;
   canvas._blurListener = blurListener;
   canvas.addEventListener('focus', focusListener);
   canvas.addEventListener('blur', blurListener);
-  
+
   const mouseMoveListener = () => { isKeyboardMode = false; };
   canvas._mouseMoveListener = mouseMoveListener;
   canvas.addEventListener('mousemove', mouseMoveListener);
@@ -428,8 +408,8 @@ function showTooltipAtIndex(index) {
   const meta1 = chartInstance.getDatasetMeta(1);
   if (!meta0.data[index] || !meta1.data[index]) return;
   chartInstance.tooltip.setActiveElements([
-    {datasetIndex: 0, index: index},
-    {datasetIndex: 1, index: index}
+    { datasetIndex: 0, index },
+    { datasetIndex: 1, index }
   ], { x: meta1.data[index].x, y: meta1.data[index].y });
   chartInstance.update('none');
 }
@@ -444,16 +424,14 @@ function announceDataPoint(cashFlow, total, requiredReturn) {
     liveRegion.className = 'sr-only';
     document.body.appendChild(liveRegion);
   }
-  
   const isInitialYear = cashFlow.year === 0;
-  const investmentLabel = isInitialYear ? 'Initial investment / Market price (PVₜ)' : 'No investment';
-  
-  const announcement = `Year ${cashFlow.year}. ` +
-    `Required return (r): ${requiredReturn ? formatPercentage(requiredReturn) : '0%'}. ` +
-    `${investmentLabel}: ${formatCurrency(cashFlow.investment, true)}. ` +
-    `Dividend (D): ${formatCurrency(cashFlow.dividend, true)}. ` +
-    `Total: ${formatCurrency(total, true)}.`;
-  
+  const investmentLabel = isInitialYear ? 'Initial investment / Market price' : 'No investment';
+  const announcement =
+    `Year ${cashFlow.year}. ` +
+    `Required return: ${requiredReturn ? formatPercentage(requiredReturn) : '0%'}. ` +
+    `${investmentLabel}: ${formatUSD(cashFlow.investment)}. ` +
+    `Dividend: ${formatUSD(cashFlow.dividend)}. ` +
+    `Total: ${formatUSD(total)}.`;
   liveRegion.textContent = announcement;
 }
 

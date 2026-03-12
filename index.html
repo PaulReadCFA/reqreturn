@@ -6,14 +6,11 @@
   <title>Required Return Calculator | CFA Institute</title>
   <meta name="description" content="Interactive required return calculator using the Gordon Growth Model">
   
-  <!-- Styles -->
   <link rel="stylesheet" href="cfa-base.css">
   <link rel="stylesheet" href="required-return-specific.css">
   
-  <!-- Chart.js for visualization -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   
-  <!-- MathJax 2.7.7 for equation rendering -->
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
       tex2jax: {
@@ -23,9 +20,7 @@
       displayAlign: "center",
       displayIndent: "0em",
       showMathMenu: true,
-      menuSettings: {
-        zoom: "Double-Click"
-      }
+      menuSettings: { zoom: "Double-Click" }
     });
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS_HTML"></script>
@@ -39,7 +34,6 @@
   </noscript>
   
   <div class="container">
-    <!-- Skip Links for Accessibility -->
     <nav role="navigation" aria-label="Skip links">
       <a href="#market-price" class="skip-link">Skip to data entry</a>
       <a href="#cash-flow-table" class="skip-link">Skip to data table</a>
@@ -48,7 +42,6 @@
     <main class="content">
       <!-- Card 0: Static Equation -->
       <section id="static-equation-card" class="card">
-        <!-- Static equation with color-coded variables -->
         <div class="equation-container">
           <div id="static-equation" style="text-align: center;">
             <!-- Populated by JavaScript -->
@@ -59,8 +52,7 @@
       <!-- Card 1: Dynamic Equation -->
       <section id="dynamic-equation-card" class="card">
         <h4 class="card-title">Implied Required Return Equation with Your Inputs</h4>
-        
-        <!-- Dynamic equation with actual values -->
+        <p class="equation-intro">Using your inputs, the implied return equation becomes:</p>
         <div class="equation-container" id="dynamic-equation-container" tabindex="-1">
           <div id="dynamic-equation">
             <!-- Populated by JavaScript -->
@@ -76,7 +68,6 @@
             Enter your stock details below. The required return calculation and visualizations will update automatically as you change the values.
           </p>
           
-          <!-- Input controls -->
           <div class="input-section">
             <p class="sr-only" id="inputHelp">
               Enter values and the calculator updates results and the chart automatically.
@@ -85,42 +76,48 @@
             <div class="input-group-inline">
               <div class="input-inline">
                 <label for="market-price" class="input-label-inline">
-                  Market price <span style="color: var(--color-return-negative);">(PV<sub>t</sub>)</span>:
+                  Market price (<span style="color: var(--color-return-negative);">PV<sub><i>t</i></sub></span>):
                 </label>
                 <div class="input-with-suffix-inline">
                   <span class="input-prefix-inline">USD</span>
                   <input 
-                    type="number" 
+                    type="number"
+                    inputmode="decimal"
                     id="market-price" 
                     class="input-field-inline"
-                    min="1" max="500" step="0.1" value="54.6">
+                    min="1" max="500" step="0.1" value="54.6"
+                    aria-describedby="inputHelp">
                 </div>
               </div>
 
               <div class="input-inline">
                 <label for="current-dividend" class="input-label-inline">
-                  Current dividend <span style="color: var(--color-return-dividend);">(Div<sub>t</sub>)</span>:
+                  Current dividend (<span style="color: var(--color-return-dividend);">Div<sub><i>t</i></sub></span>):
                 </label>
                 <div class="input-with-suffix-inline">
                   <span class="input-prefix-inline">USD</span>
                   <input 
-                    type="number" 
+                    type="number"
+                    inputmode="decimal"
                     id="current-dividend" 
                     class="input-field-inline"
-                    min="0" max="50" step="0.1" value="5.1">
+                    min="0" max="50" step="0.1" value="5.1"
+                    aria-describedby="inputHelp">
                 </div>
               </div>
 
               <div class="input-inline">
                 <label for="growth-rate" class="input-label-inline">
-                  Growth rate <span style="color: var(--color-green-data);">(g)</span>:
+                  Growth rate (<span style="color: var(--color-return-growth);"><i>g</i></span>):
                 </label>
                 <div class="input-with-suffix-inline">
                   <input 
-                    type="number" 
+                    type="number"
+                    inputmode="decimal"
                     id="growth-rate" 
                     class="input-field-inline"
-                    min="0" max="25" step="0.1" value="6.4">
+                    min="0" max="25" step="0.1" value="6.4"
+                    aria-describedby="inputHelp">
                   <span class="input-suffix-inline">%</span>
                 </div>
               </div>
@@ -135,38 +132,38 @@
         </div>
       </section>
 
-      <!-- Card 3: Visualizer (full width) -->
+      <!-- Card 3: Visualizer -->
       <section class="card" id="visualizer" tabindex="-1">
         <h4 class="card-title">Required Return Analysis</h4>
         <div class="card-content">
+
+          <!-- Chart legend — own landmark region for screen readers -->
+          <div id="chart-legend"
+               class="legend chart-legend-region"
+               role="region"
+               aria-label="Chart legend">
+            <span class="legend-item">
+              <span class="legend-color" style="background-color: var(--color-return-negative);"></span>
+              Initial investment / Market price (<span style="color: var(--color-return-negative);">PV<sub><i>t</i></sub></span>)
+            </span>
+            <span class="legend-item">
+              <span class="legend-color" style="background-color: var(--color-return-dividend);"></span>
+              Dividend cash flow (<span style="color: var(--color-return-dividend);">Div<sub><i>t</i></sub></span>)
+            </span>
+            <span class="legend-item">
+              <span class="legend-color legend-dashed-line" style="border-bottom: 2px dashed var(--color-return-required); background: none; width: 1.5rem; height: 0; border-left: none; border-right: none; border-top: none;"></span>
+              Required return (<span style="color: var(--color-return-required);"><i>r</i></span>)
+            </span>
+          </div>
+
           <!-- View toggle buttons -->
           <div class="view-controls">
-            <div class="legend" id="chart-legend" role="list" aria-label="Chart legend">
-              <span class="legend-item" role="listitem">
-                <span class="legend-color" style="background-color: var(--color-return-negative);"></span>
-                Initial investment / Market price <span style="color: var(--color-return-negative);">(PV<sub>t</sub>)</span>
-              </span>
-              <span class="legend-item" role="listitem">
-                <span class="legend-color" style="background-color: var(--color-return-dividend);"></span>
-                Dividend cash flow <span style="color: var(--color-return-dividend);">(Div<sub>t</sub>)</span>
-              </span>
-              <span class="legend-item" role="listitem">
-                <span class="legend-color legend-dashed-line" style="border-bottom: 2px dashed var(--color-return-required); background: none; width: 1.5rem; height: 0; border-left: none; border-right: none; border-top: none;"></span>
-                Required return <span style="color: var(--color-return-required); font-style: italic;">(r)</span>
-              </span>
-            </div>
-            
             <div class="button-group" role="group" aria-label="View mode - switch between chart and table">
-              <button id="chart-view-btn" class="toggle-btn active" aria-pressed="true">
-                Chart
-              </button>
-              <button id="table-view-btn" class="toggle-btn" aria-pressed="false">
-                Table
-              </button>
+              <button id="chart-view-btn" class="toggle-btn active" aria-pressed="true">Chart</button>
+              <button id="table-view-btn" class="toggle-btn" aria-pressed="false">Table</button>
             </div>
           </div>
 
-          <!-- Screen reader announcement for view changes -->
           <div class="sr-only" aria-live="polite" aria-atomic="true" id="view-announcement"></div>
 
           <!-- Hidden chart description -->
@@ -174,12 +171,13 @@
             <h4 id="return-chart-title">Required return and dividend projection over time</h4>
             <p>
               This chart displays the projected dividend cash flows over 10 years with the calculated required return.
+              The dividend stream continues indefinitely, but only the first 10 years are shown.
               At year 0, the initial stock purchase price is shown as a negative cash flow (money paid out).
-              Then, at each subsequent year, dividend payments grow at the specified growth rate.
+              At each subsequent year, dividend payments grow at the specified growth rate.
               The dashed purple line shows the constant required return percentage on the right axis.
             </p>
             <p>
-              Keyboard navigation: Tab to focus the chart. Use Left and Right arrow keys to move between years.
+              Keyboard navigation: Use Left and Right arrow keys to move between years.
               Press Home to jump to year 0, or End to jump to the final year.
               Each year will announce its dividend amount, required return, and total cash flow.
             </p>
@@ -203,7 +201,7 @@
         </div>
       </section>
 
-      <!-- Card 4: Results & Analysis (full width) -->
+      <!-- Card 4: Results -->
       <section class="card" id="results-card">
         <h4 class="card-title">Results and Analysis</h4>
         <div class="card-content">
@@ -215,7 +213,6 @@
     </main>
   </div>
 
-  <!-- JavaScript Modules -->
   <script type="module" src="required-return-calculator.js"></script>
 </body>
 </html>
