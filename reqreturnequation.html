@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Equation 21 | Required Return | CFA Institute</title>
+
+  <link rel="stylesheet" href="cfa-base.css" />
+  <link rel="stylesheet" href="required-return-specific.css" />
+
+  <style>
+    body {
+      background: #ffffff;
+      padding: 0.5rem 1rem;
+      margin: 0;
+    }
+
+    .container {
+      padding: 0;
+    }
+
+    .content {
+      gap: 0;
+    }
+
+    #static-equation-card {
+      box-shadow: none;
+      border: none;
+      padding: 0.5rem 0;
+    }
+
+    .equation-container {
+      margin: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      text-align: center;
+    }
+
+    .equation-container math {
+      display: inline-block;
+      font-family: "STIX Two Math", "Cambria Math", "Latin Modern Math", serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      min-width: max-content;
+    }
+  </style>
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      MathML: {
+        extensions: ["content-mathml.js"]
+      },
+      "HTML-CSS": {
+        scale: 100,
+        linebreaks: { automatic: true }
+      },
+      showProcessingMessages: false,
+      messageStyle: "none",
+      showMathMenu: false,
+      skipStartupTypeset: false
+    });
+
+    function removeMathJaxTabindex() {
+      document.querySelectorAll(".MathJax, .MathJax_Display, [id^='MathJax-']").forEach(function (el) {
+        el.removeAttribute("tabindex");
+      });
+    }
+
+    MathJax.Hub.Register.StartupHook("End", function () {
+      removeMathJaxTabindex();
+      setTimeout(removeMathJaxTabindex, 100);
+      setTimeout(removeMathJaxTabindex, 500);
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=MML_HTMLorMML"></script>
+</head>
+<body>
+  <div class="container">
+    <main class="content">
+      <section id="static-equation-card" class="card">
+        <div class="equation-container">
+          <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+            <mrow>
+              <mi mathcolor="#6b35e8">r</mi>
+              <mo>=</mo>
+              <mfrac>
+                <mrow>
+                  <msub>
+                    <mi mathcolor="#3c6ae5">Div</mi>
+                    <mi>t</mi>
+                  </msub>
+                  <mrow>
+                    <mo>(</mo>
+                    <mn>1</mn>
+                    <mo>+</mo>
+                    <mi mathcolor="#15803d">g</mi>
+                    <mo>)</mo>
+                  </mrow>
+                </mrow>
+                <msub>
+                  <mi mathcolor="#b95b1d">PV</mi>
+                  <mi>t</mi>
+                </msub>
+              </mfrac>
+              <mo>+</mo>
+              <mi mathcolor="#15803d">g</mi>
+              <mo>=</mo>
+              <mfrac>
+                <msub>
+                  <mi mathcolor="#3c6ae5">Div</mi>
+                  <mrow>
+                    <mi>t</mi>
+                    <mo>+</mo>
+                    <mn>1</mn>
+                  </mrow>
+                </msub>
+                <msub>
+                  <mi mathcolor="#b95b1d">PV</mi>
+                  <mi>t</mi>
+                </msub>
+              </mfrac>
+              <mo>+</mo>
+              <mi mathcolor="#15803d">g</mi>
+            </mrow>
+          </math>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

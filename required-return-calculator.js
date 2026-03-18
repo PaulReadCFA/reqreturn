@@ -36,9 +36,6 @@ import { renderDynamicEquation, renderStaticEquation } from './return-modules/eq
 function init() {
   console.log('Required Return Calculator initializing...');
   
-  // Initialize static equation (Card 0)
-  initializeStaticEquation();
-  
   setupInputListeners();
   setupViewToggle();
   setupSkipLinks();

@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Required Return Calculator | CFA Institute</title>
   <meta name="description" content="Interactive required return calculator using the Gordon Growth Model">
-  
+
   <link rel="stylesheet" href="cfa-base.css">
   <link rel="stylesheet" href="required-return-specific.css">
-  
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  
+
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
       tex2jax: {
@@ -32,42 +32,23 @@
       <p style="color: #7f1d1d; margin: 0;">This calculator requires JavaScript to function. Please enable JavaScript in your browser to use this tool.</p>
     </div>
   </noscript>
-  
+
   <div class="container">
     <nav role="navigation" aria-label="Skip links">
       <a href="#market-price" class="skip-link">Skip to data entry</a>
       <a href="#cash-flow-table" class="skip-link">Skip to data table</a>
     </nav>
-    
+
     <main class="content">
-      <!-- Card 0: Static Equation -->
-      <section id="static-equation-card" class="card">
-        <div class="equation-container">
-          <div id="static-equation" style="text-align: center;">
-            <!-- Populated by JavaScript -->
-          </div>
-        </div>
-      </section>
 
-      <!-- Card 1: Dynamic Equation -->
-      <section id="dynamic-equation-card" class="card">
-        <h4 class="card-title">Implied Required Return Equation</h4>
-        <p class="equation-intro">Using your inputs, the implied return equation becomes:</p>
-        <div class="equation-container" id="dynamic-equation-container" tabindex="-1">
-          <div id="dynamic-equation">
-            <!-- Populated by JavaScript -->
-          </div>
-        </div>
-      </section>
-
-      <!-- Card 2: Calculator -->
+      <!-- Card 1: Calculator -->
       <section class="card" id="calculator" tabindex="-1">
         <h4 class="card-title">Required Return Calculator</h4>
         <div class="card-content">
           <p class="equation-intro">
             Enter your stock details below. The required return calculation and visualizations will update automatically as you change the values.
           </p>
-          
+
           <div class="input-section">
             <p class="sr-only" id="inputHelp">
               Enter values and the calculator updates results and the chart automatically.
@@ -80,10 +61,10 @@
                 </label>
                 <div class="input-with-suffix-inline">
                   <span class="input-prefix-inline">USD</span>
-                  <input 
+                  <input
                     type="number"
                     inputmode="decimal"
-                    id="market-price" 
+                    id="market-price"
                     class="input-field-inline"
                     min="1" max="500" step="0.1" value="54.6"
                     aria-describedby="inputHelp">
@@ -96,10 +77,10 @@
                 </label>
                 <div class="input-with-suffix-inline">
                   <span class="input-prefix-inline">USD</span>
-                  <input 
+                  <input
                     type="number"
                     inputmode="decimal"
-                    id="current-dividend" 
+                    id="current-dividend"
                     class="input-field-inline"
                     min="0" max="50" step="0.1" value="5.1"
                     aria-describedby="inputHelp">
@@ -111,10 +92,10 @@
                   Growth rate (<span style="color: var(--color-return-growth);"><i>g</i></span>):
                 </label>
                 <div class="input-with-suffix-inline">
-                  <input 
+                  <input
                     type="number"
                     inputmode="decimal"
-                    id="growth-rate" 
+                    id="growth-rate"
                     class="input-field-inline"
                     min="0" max="25" step="0.1" value="6.4"
                     aria-describedby="inputHelp">
@@ -128,6 +109,17 @@
               <div class="validation-title">Please correct the following:</div>
               <ul id="validation-list"></ul>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card 2: Dynamic Equation -->
+      <section id="dynamic-equation-card" class="card">
+        <h4 class="card-title">Implied Required Return Equation</h4>
+        <p class="equation-intro">Using your inputs, the implied return equation becomes:</p>
+        <div class="equation-container" id="dynamic-equation-container" tabindex="-1">
+          <div id="dynamic-equation">
+            <!-- Populated by JavaScript -->
           </div>
         </div>
       </section>
@@ -184,9 +176,9 @@
           </div>
 
           <!-- Chart container -->
-          <div id="chart-container" class="chart-wrapper" 
-               role="region" 
-               aria-labelledby="return-chart-title" 
+          <div id="chart-container" class="chart-wrapper"
+               role="region"
+               aria-labelledby="return-chart-title"
                aria-describedby="return-chart-desc"
                tabindex="-1">
             <canvas id="return-chart"></canvas>
@@ -210,6 +202,7 @@
           </div>
         </div>
       </section>
+
     </main>
   </div>
 
