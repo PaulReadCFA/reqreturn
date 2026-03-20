@@ -114,7 +114,7 @@
       </section>
 
       <!-- Card 2: Dynamic Equation -->
-      <section id="dynamic-equation-card" class="card">
+      <section id="dynamic-equation-card" class="card" role="region" tabindex="0">
         <h4 class="card-title">Implied Required Return Equation</h4>
         <p class="equation-intro">Using your inputs, the implied return equation becomes:</p>
         <div class="equation-container" id="dynamic-equation-container" tabindex="-1">
@@ -158,8 +158,8 @@
 
           <div class="sr-only" aria-live="polite" aria-atomic="true" id="view-announcement"></div>
 
-          <!-- Hidden chart description -->
-          <div class="sr-only" id="return-chart-desc">
+          <!-- Hidden chart description - hidden from SR independent traversal, only used via aria-describedby when chart is focused -->
+          <div hidden id="return-chart-desc">
             <h4 id="return-chart-title">Required return and dividend projection over time</h4>
             <p>
               This chart displays the projected dividend cash flows over 10 years with the calculated required return.
@@ -168,18 +168,12 @@
               At each subsequent year, dividend payments grow at the specified growth rate.
               The dashed purple line shows the constant required return percentage on the right axis.
             </p>
-            <p>
-              Keyboard navigation: Use Left and Right arrow keys to move between years.
-              Press Home to jump to year 0, or End to jump to the final year.
-              Each year will announce its dividend amount, required return, and total cash flow.
-            </p>
           </div>
 
           <!-- Chart container -->
           <div id="chart-container" class="chart-wrapper"
                role="region"
                aria-labelledby="return-chart-title"
-               aria-describedby="return-chart-desc"
                tabindex="-1">
             <canvas id="return-chart"></canvas>
           </div>

@@ -115,12 +115,29 @@ export function renderDynamicEquation(calculations, params) {
   // Fade outer container, update inner, restore after MathJax renders
   setEquationContent(container, equation);
 
-  // Screen reader announcement (plain text)
+  // Plain-text formatted values (used in both aria-label and live region)
   const gFormatted = formatPercentage(growthRate);
   const rFormatted = formatPercentage(requiredReturn);
   const d0Plain    = `USD ${currentDividend.toFixed(2)}`;
   const d1Plain    = `USD ${d1.toFixed(2)}`;
   const p0Plain    = `USD ${marketPrice.toFixed(2)}`;
+
+  // Update the section's aria-label so SR users hear the result immediately
+  // on first load and on every recalculation, without needing to trigger a change
+  const card = document.getElementById('dynamic-equation-card');
+  if (card) {
+    const label =
+      `Implied Required Return Equation. ` +
+      `r = ${rPercent}%. ` +
+      `Calculated as: current dividend ${d0Plain} ` +
+      `times 1 plus growth rate ${gFormatted}, ` +
+      `divided by current price ${p0Plain}, ` +
+      `plus growth rate ${gFormatted}. ` +
+      `Result: ${rFormatted}.`;
+    card.setAttribute('aria-label', label);
+  }
+
+  // Screen reader announcement (plain text)
 
   const announcement =
     `Required return equals ${rFormatted}. ` +
