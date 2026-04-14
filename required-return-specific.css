@@ -45,13 +45,19 @@ mjx-assistive-mml[aria-hidden="true"] * {
   border-color: var(--color-teal-data);
 }
 .result-title.required-return {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--color-purple-bold);
   margin-bottom: 0.5rem;
+  letter-spacing: normal;
+  text-transform: none;
 }
 .result-title.model-info {
+  font-size: 1rem;
+  font-weight: 600;
   color: var(--color-teal-data);
+  letter-spacing: normal;
+  text-transform: none;
 }
 .result-value {
   font-size: 1.5rem;
@@ -161,15 +167,42 @@ mjx-assistive-mml[aria-hidden="true"] * {
   font-size: 0.875rem;
   font-weight: 500;
 }
+#calculator .input-section {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+#calculator .validation-summary {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
 @media (max-width: 640px) {
   .input-group-inline {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
   }
-  .input-inline { width: 100%; }
-  .input-with-suffix-inline { width: 100%; max-width: 10rem; }
-  .input-label-inline { min-width: auto; }
+  .input-inline {
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: wrap;
+    white-space: normal;
+    align-items: flex-start;
+    box-sizing: border-box;
+  }
+  .input-with-suffix-inline {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .input-label-inline {
+    flex: 1 1 100%;
+    max-width: 100%;
+    min-width: 0;
+    white-space: normal;
+  }
 }
 
 /* ==========================================================================
@@ -212,7 +245,7 @@ math {
   min-height: 140px;
   transition: opacity 0.15s ease;
 }
-#dynamic-equation-container:focus {
+#dynamic-equation-container:focus-visible {
   outline: 2px solid var(--color-blue-interactive);
   outline-offset: 2px;
 }
@@ -274,19 +307,44 @@ math mo { margin: 0 0.1em; }
 /* ==========================================================================
    RESPONSIVE TABLE - Required Return Specific
    ========================================================================== */
-#table-container:focus {
+#table-container:focus-visible {
   outline: 2px solid var(--color-blue-interactive);
   outline-offset: 2px;
 }
+
+/* Wide 6-column cash flow table: keep horizontal scroll usable at ultra-narrow widths
+   (min-width:0 lets the scrollport shrink; intrinsic table width drives overflow-x). */
+#visualizer > .card-content {
+  min-width: 0;
+}
+
+#visualizer #table-container.table-wrapper {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#visualizer #cash-flow-table {
+  width: max-content;
+  min-width: 100%;
+}
+
 .view-controls {
   min-height: 44px;
   align-items: center;
 }
-.view-controls .button-group {
-  margin-left: auto;
-  flex-shrink: 0;
+@media (max-width: 480px) {
+  .data-table {
+    font-size: 0.6875rem;
+  }
+  #visualizer #cash-flow-table thead th {
+    position: static;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+  }
 }
-@media (max-width: 480px) { .data-table { font-size: 0.6875rem; } }
 @media (max-width: 400px) {
   .data-table { font-size: 0.625rem; }
   .data-table th, .data-table td { padding: 0.25rem 0.3rem; }

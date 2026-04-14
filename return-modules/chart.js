@@ -194,6 +194,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
             callback: (value) => value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
             color: '#374151',
             autoSkip: true,
+            maxTicksLimit: 8,
             maxRotation: 0,
             minRotation: 0,
             font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" }
@@ -206,19 +207,24 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
           min: 0,
           max: axisMax,
           ticks: {
-            stepSize: 5,
-            callback: (value) => value.toFixed(0),
+            callback: (value) => Number(value).toFixed(0),
             color: COLORS.required,
-            autoSkip: false,
+            autoSkip: true,
+            maxTicksLimit: 7,
             maxRotation: 0,
             minRotation: 0,
-            font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" }
+            font: { size: 12, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" }
           },
           grid: { display: false }
         }
       },
       layout: {
-        padding: { left: 10, right: 55, top: showLabels ? 35 : 15, bottom: 10 }
+        padding: {
+          left: 10,
+          right: axisMax > 35 ? 62 : 55,
+          top: showLabels ? 35 : 15,
+          bottom: 10
+        }
       }
     },
     plugins: [

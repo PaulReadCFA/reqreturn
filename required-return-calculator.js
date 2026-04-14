@@ -22,7 +22,9 @@ import {
   focusElement, 
   announceToScreenReader,
   debounce,
-  initializeStaticEquation
+  initializeStaticEquation,
+  clampNumericInputLength,
+  NUMERIC_INPUT_MAX_CHARS
 } from './return-modules/utils.js';
 import { renderChart, shouldShowLabels, destroyChart } from './return-modules/chart.js';
 import { renderTable } from './return-modules/table.js';
@@ -109,8 +111,12 @@ function setupInputListeners() {
       }
     }, 300);
     
-    listen(input, 'input', debouncedUpdate);
-    listen(input, 'change', debouncedUpdate);
+    const onInput = () => {
+      clampNumericInputLength(input, NUMERIC_INPUT_MAX_CHARS);
+      debouncedUpdate();
+    };
+    listen(input, 'input', onInput);
+    listen(input, 'change', onInput);
   });
 }
 
