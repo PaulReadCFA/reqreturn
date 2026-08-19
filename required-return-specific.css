@@ -27,6 +27,8 @@ mjx-assistive-mml[aria-hidden="true"] * {
    1. REQUIRED RETURN SPECIFIC COLOR ASSIGNMENTS
    ========================================================================== */
 :root {
+  /* Preserve prior local base purple (slightly darker for contrast) */
+  --color-purple-bold: #6b35e8;
   --color-return-required: var(--color-purple-bold);
   --color-return-dividend: var(--color-blue-interactive);
   --color-return-negative: var(--color-orange-deep);

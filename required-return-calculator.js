@@ -292,6 +292,7 @@ function setupResizeListener() {
 function handleResponsiveView() {
   const chartBtn = $('#chart-view-btn');
   const tableBtn = $('#table-view-btn');
+  const helper = $('#chart-helper-text');
   const viewportWidth = window.innerWidth;
   
   if (viewportWidth < 600) {
@@ -302,19 +303,26 @@ function handleResponsiveView() {
     if (chartBtn) {
       chartBtn.disabled = true;
       chartBtn.setAttribute('aria-disabled', 'true');
-      chartBtn.title = 'Chart view not available at this screen size';
+      chartBtn.setAttribute('aria-describedby', 'chart-helper-text');
+      chartBtn.removeAttribute('title');
     }
     if (tableBtn) {
       tableBtn.disabled = false;
       tableBtn.removeAttribute('aria-disabled');
-      tableBtn.title = '';
+      tableBtn.removeAttribute('title');
     }
+    if (helper) helper.style.display = 'block';
   } else {
     if (chartBtn) {
       chartBtn.disabled = false;
       chartBtn.removeAttribute('aria-disabled');
-      chartBtn.title = '';
+      chartBtn.removeAttribute('aria-describedby');
+      chartBtn.removeAttribute('title');
     }
+    if (tableBtn) {
+      tableBtn.removeAttribute('title');
+    }
+    if (helper) helper.style.display = 'none';
   }
 }
 

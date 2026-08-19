@@ -6,6 +6,11 @@
   <title>Required Return Calculator | CFA Institute</title>
   <meta name="description" content="Interactive required return calculator using the Gordon Growth Model">
 
+  <!-- Google Fonts: Lato (was @import in local cfa-base; load via link for shared master) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="cfa-base.css">
   <link rel="stylesheet" href="required-return-specific.css">
 
@@ -153,6 +158,9 @@
               <button id="table-view-btn" class="toggle-btn" aria-pressed="false">Table</button>
             </div>
           </div>
+          <p id="chart-helper-text" class="text-xs text-gray-500" style="display: none; margin-bottom: 0.75rem;">
+            Chart view is not available at narrow screen widths. Showing table view.
+          </p>
 
           <div class="sr-only" aria-live="polite" aria-atomic="true" id="view-announcement"></div>
 
