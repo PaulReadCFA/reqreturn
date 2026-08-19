@@ -5,6 +5,17 @@
 
 import { formatCurrency, formatPercentage } from './utils.js';
 
+
+/** Curriculum chart label convention: 13px / 600 / Lato */
+const CHART_FONT = {
+  family: "'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  size: 13,
+  weight: '600'
+};
+const CHART_FONT_CSS = `${CHART_FONT.weight} ${CHART_FONT.size}px ${CHART_FONT.family}`;
+const CHART_FONT_ITALIC_CSS = `italic ${CHART_FONT.weight} ${CHART_FONT.size}px ${CHART_FONT.family}`;
+
+
 // Required Return Colors
 const COLORS = {
   dividend: '#3c6ae5',
@@ -133,7 +144,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
           text: 'Dividend stream continues indefinitely; first 10 years shown.',
           position: 'bottom',
           color: '#6b7280',
-          font: { size: 12, style: 'italic', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" },
+          font: { size: 13, style: 'italic', family: CHART_FONT.family },
           padding: { top: 8, bottom: 0 }
         },
         legend: { display: false },
@@ -174,11 +185,11 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
             display: true,
             text: 'Years',
             color: '#374151',
-            font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" }
+            font: { size: 13, weight: '600', family: CHART_FONT.family }
           },
           ticks: {
             color: '#374151',
-            font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" }
+            font: { size: 13, weight: '600', family: CHART_FONT.family }
           },
           grid: { display: false }
         },
@@ -187,7 +198,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
             display: true,
             text: 'Cash flows (USD)',
             color: '#374151',
-            font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" }
+            font: { size: 13, weight: '600', family: CHART_FONT.family }
           },
           position: 'left',
           ticks: {
@@ -197,7 +208,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
             maxTicksLimit: 8,
             maxRotation: 0,
             minRotation: 0,
-            font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" }
+            font: { size: 13, weight: '600', family: CHART_FONT.family }
           },
           grid: { color: 'rgba(0, 0, 0, 0.05)' }
         },
@@ -213,7 +224,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
             maxTicksLimit: 7,
             maxRotation: 0,
             minRotation: 0,
-            font: { size: 12, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" }
+            font: { size: 13, weight: '600', family: CHART_FONT.family }
           },
           grid: { display: false }
         }
@@ -235,8 +246,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
           const chartArea = chart.chartArea;
           ctx.save();
           ctx.fillStyle = COLORS.required;
-          const fontSize = Math.max(11, Math.min(14, chartArea.width / 50));
-          ctx.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif`;
+          ctx.font = CHART_FONT_CSS;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           const x = chartArea.right + 48;
@@ -254,7 +264,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
           if (!showLabels) return;
           const ctx = chart.ctx;
           ctx.save();
-          ctx.font = "700 14px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif";
+          ctx.font = CHART_FONT_CSS;
           ctx.fillStyle = '#000000';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'bottom';
@@ -294,9 +304,9 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
           const labelX = (chartArea.left + chartArea.right) / 2;
           const labelY = lineYPos + 20;
           const labelValue = formatPercentage(requiredReturn, 2);
-          ctx.font = `italic 700 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif`;
+          ctx.font = CHART_FONT_ITALIC_CSS;
           const rMetrics = ctx.measureText('\u{1D45F}');
-          ctx.font = "700 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif";
+          ctx.font = CHART_FONT_CSS;
           const equalsMetrics = ctx.measureText(' = ');
           const valueMetrics = ctx.measureText(labelValue);
           const totalWidth = rMetrics.width + equalsMetrics.width + valueMetrics.width;
@@ -312,12 +322,12 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
           ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
           let currentX = labelX - totalWidth / 2;
           ctx.fillStyle = COLORS.required;
-          ctx.font = "italic 700 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif";
+          ctx.font = CHART_FONT_ITALIC_CSS;
           ctx.textAlign = 'left';
           ctx.textBaseline = 'middle';
           ctx.fillText('\u{1D45F}', currentX, labelY);
           currentX += rMetrics.width;
-          ctx.font = "700 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif";
+          ctx.font = CHART_FONT_CSS;
           ctx.fillText(' = ', currentX, labelY);
           currentX += equalsMetrics.width;
           ctx.fillText(labelValue, currentX, labelY);
