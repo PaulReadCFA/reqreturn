@@ -13,7 +13,14 @@ const CHART_FONT = {
   weight: '600'
 };
 const CHART_FONT_CSS = `${CHART_FONT.weight} ${CHART_FONT.size}px ${CHART_FONT.family}`;
-const CHART_FONT_ITALIC_CSS = `italic ${CHART_FONT.weight} ${CHART_FONT.size}px ${CHART_FONT.family}`;
+
+/** In pill labels only the variable carries colour; the operator and value stay neutral. */
+const LABEL_TEXT_COLOR = '#374151';
+
+/** Shared pill geometry so every label box has the same breathing space. */
+const LABEL_PAD_X = 8;
+const LABEL_PAD_Y = 5;
+const LABEL_BOX_HEIGHT = CHART_FONT.size + LABEL_PAD_Y * 2;
 
 
 // Required Return Colors
@@ -24,10 +31,10 @@ const COLORS = {
   darkText: '#06005a'
 };
 
-// Unicode italic math characters for canvas rendering
-const ITALICr = '\u{1D45F}';   // 𝑟
-const ITALICt = '\u{1D461}';   // 𝑡
-const ITALICg = '\u{1D454}';   // 𝑔
+// Unicode italic math characters for canvas rendering — variables are
+// italicised by the glyph itself, not by font-style
+const ITALIC_r = '\u{1D45F}';   // 𝑟
+const ITALIC_t = '\u{1D461}';   // 𝑡
 
 let chartInstance = null;
 let currentFocusIndex = 0;
@@ -158,13 +165,13 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
               const isInitialYear = index === 0;
 
               if (context.dataset.label === 'Required return (r)') {
-                return `Required return (\u{1D45F}): ${formatPercentage(value)}`;
+                return `Required return (${ITALIC_r}): ${formatPercentage(value)}`;
               }
               if (isInitialYear && context.dataset.label === 'Initial investment / Market price') {
-                return `Initial investment / Market price (PV\u{1D461}): ${formatUSD(value)}`;
+                return `Initial investment / Market price (PV${ITALIC_t}): ${formatUSD(value)}`;
               }
               if (context.dataset.label === 'Dividend cash flow') {
-                return `Dividend (Div\u{1D461}): ${formatUSD(value)}`;
+                return `Dividend (Div${ITALIC_t}): ${formatUSD(value)}`;
               }
               return `${context.dataset.label}: ${formatUSD(value)}`;
             },
@@ -254,7 +261,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
           ctx.translate(x, y);
           ctx.rotate(Math.PI / 2);
           // Use italic r (unicode) in axis label
-          ctx.fillText(`Required return (\u{1D45F}) %`, 0, 0);
+          ctx.fillText(`Required return (${ITALIC_r}) %`, 0, 0);
           ctx.restore();
         }
       },
@@ -304,17 +311,15 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
           const labelX = (chartArea.left + chartArea.right) / 2;
           const labelY = lineYPos + 20;
           const labelValue = formatPercentage(requiredReturn, 2);
-          ctx.font = CHART_FONT_ITALIC_CSS;
-          const rMetrics = ctx.measureText('\u{1D45F}');
           ctx.font = CHART_FONT_CSS;
+          const rMetrics = ctx.measureText(ITALIC_r);
           const equalsMetrics = ctx.measureText(' = ');
           const valueMetrics = ctx.measureText(labelValue);
           const totalWidth = rMetrics.width + equalsMetrics.width + valueMetrics.width;
-          const padding = 5;
-          const boxX = labelX - totalWidth / 2 - padding;
-          const boxY = labelY - 12 / 2 - padding;
-          const boxWidth = totalWidth + padding * 2;
-          const boxHeight = 12 + padding * 2;
+          const boxX = labelX - totalWidth / 2 - LABEL_PAD_X;
+          const boxY = labelY - LABEL_BOX_HEIGHT / 2;
+          const boxWidth = totalWidth + LABEL_PAD_X * 2;
+          const boxHeight = LABEL_BOX_HEIGHT;
           ctx.fillStyle = 'white';
           ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
           ctx.strokeStyle = COLORS.required;
@@ -322,12 +327,11 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
           ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
           let currentX = labelX - totalWidth / 2;
           ctx.fillStyle = COLORS.required;
-          ctx.font = CHART_FONT_ITALIC_CSS;
           ctx.textAlign = 'left';
           ctx.textBaseline = 'middle';
-          ctx.fillText('\u{1D45F}', currentX, labelY);
+          ctx.fillText(ITALIC_r, currentX, labelY);
           currentX += rMetrics.width;
-          ctx.font = CHART_FONT_CSS;
+          ctx.fillStyle = LABEL_TEXT_COLOR;
           ctx.fillText(' = ', currentX, labelY);
           currentX += equalsMetrics.width;
           ctx.fillText(labelValue, currentX, labelY);
