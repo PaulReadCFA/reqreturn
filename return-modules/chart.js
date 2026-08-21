@@ -4,7 +4,7 @@
  */
 
 import { formatCurrency, formatPercentage } from './utils.js';
-import { getChartTypography } from '../chart-typography.js';
+import { getChartTypography, fillTightParenVar } from '../chart-typography.js';
 
 /** Curriculum chart label convention: 13px / 600 / Lato at the 18px design root. */
 const CHART_FONT = { family: '', size: 13, weight: '600' };
@@ -254,14 +254,12 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
           ctx.save();
           ctx.fillStyle = COLORS.required;
           ctx.font = CHART_FONT_CSS;
-          ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           const x = chartArea.right + 48;
           const y = (chartArea.top + chartArea.bottom) / 2;
           ctx.translate(x, y);
           ctx.rotate(Math.PI / 2);
-          // Use italic r (unicode) in axis label
-          ctx.fillText(`Required return (${ITALIC_r}) %`, 0, 0);
+          fillTightParenVar(ctx, 'Required return (', ITALIC_r, ') %', 0, 0, 'center');
           ctx.restore();
         }
       },
