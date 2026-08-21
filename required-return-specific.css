@@ -97,114 +97,21 @@ mjx-assistive-mml[aria-hidden="true"] * {
 }
 
 /* ==========================================================================
-   3. INPUT LAYOUT - Inline with Prefix/Suffix
+   3. INPUT LAYOUT - data entry comes from cfa-base.css
+   Only the label variable colours are required-return-specific.
    ========================================================================== */
-.input-group-inline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.875rem 1.25rem;
-}
-.input-inline {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  white-space: nowrap;
-}
-.input-label-inline {
-  font-size: 0.875rem;
-  color: var(--color-gray-700);
-  font-weight: 500;
-  white-space: nowrap;
-}
-.input-with-suffix-inline {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  width: 7rem;
-  position: relative;
-}
-.input-field-inline {
-  flex: 1;
-  width: 100%;
-  padding: 0.4rem 0.5rem;
-  border: 1px solid #8b93a7;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  text-align: right;
-  box-sizing: border-box;
-  font-family: 'Lato', sans-serif;
-}
-.input-field-inline:hover {
-  border-color: var(--color-gray-600);
-}
-.input-field-inline:focus {
-  outline: none;
-  border-color: var(--color-blue-interactive);
-  box-shadow: 0 0 0 2px rgba(60, 106, 229, 0.1);
-}
-.input-field-inline.error {
-  border-color: var(--color-red-700) !important;
-  box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.2);
-}
-#growth-rate.input-field-inline {
-  padding-right: 2rem;
-}
-.input-prefix-inline {
-  color: var(--color-gray-500);
-  font-weight: 500;
-  font-size: 0.875rem;
-  margin-right: 0.2rem;
-  flex-shrink: 0;
-}
-.input-suffix-inline {
-  position: absolute;
-  right: 0.4rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-gray-500);
-  pointer-events: none;
-  width: 1.2rem;
-  text-align: right;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
+.label-var-price    { color: var(--color-return-negative); }
+.label-var-dividend { color: var(--color-return-dividend); }
+.label-var-growth   { color: var(--color-return-growth); }
+
 #calculator .input-section {
   max-width: 100%;
   min-width: 0;
-  overflow-x: hidden;
 }
 
 #calculator .validation-summary {
   margin-top: 0;
   margin-bottom: 0.75rem;
-}
-
-@media (max-width: 640px) {
-  .input-group-inline {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-  .input-inline {
-    width: 100%;
-    max-width: 100%;
-    flex-wrap: wrap;
-    white-space: normal;
-    align-items: flex-start;
-    box-sizing: border-box;
-  }
-  .input-with-suffix-inline {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-  .input-label-inline {
-    flex: 1 1 100%;
-    max-width: 100%;
-    min-width: 0;
-    white-space: normal;
-  }
 }
 
 /* ==========================================================================
@@ -314,44 +221,16 @@ math mo { margin: 0 0.1em; }
   outline-offset: 2px;
 }
 
-/* Wide 6-column cash flow table: keep horizontal scroll usable at ultra-narrow widths
-   (min-width:0 lets the scrollport shrink; intrinsic table width drives overflow-x). */
+/* Let the card shrink below the table's intrinsic width; the shared base then
+   decides between the scroll region (desktop) and card stacking (<=768px). */
 #visualizer > .card-content {
   min-width: 0;
-}
-
-#visualizer #table-container.table-wrapper {
-  min-width: 0;
-  max-width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-#visualizer #cash-flow-table {
-  width: max-content;
-  min-width: 100%;
 }
 
 .view-controls {
   min-height: 44px;
   align-items: center;
 }
-@media (max-width: 480px) {
-  .data-table {
-    font-size: 0.6875rem;
-  }
-  #visualizer #cash-flow-table thead th {
-    position: static;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    line-height: 1.35;
-  }
-}
-@media (max-width: 400px) {
-  .data-table { font-size: 0.625rem; }
-  .data-table th, .data-table td { padding: 0.25rem 0.3rem; }
-}
-
 /* ==========================================================================
    REDUCED MOTION - disable equation fade
    ========================================================================== */

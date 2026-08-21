@@ -4,23 +4,30 @@
  */
 
 import { formatCurrency, formatPercentage } from './utils.js';
+import { getChartTypography } from '../chart-typography.js';
 
-
-/** Curriculum chart label convention: 13px / 600 / Lato */
-const CHART_FONT = {
-  family: "'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  size: 13,
-  weight: '600'
-};
-const CHART_FONT_CSS = `${CHART_FONT.weight} ${CHART_FONT.size}px ${CHART_FONT.family}`;
+/** Curriculum chart label convention: 13px / 600 / Lato at the 18px design root. */
+const CHART_FONT = { family: '', size: 13, weight: '600' };
+let CHART_FONT_CSS = '';
 
 /** In pill labels only the variable carries colour; the operator and value stay neutral. */
 const LABEL_TEXT_COLOR = '#374151';
 
 /** Shared pill geometry so every label box has the same breathing space. */
-const LABEL_PAD_X = 8;
-const LABEL_PAD_Y = 5;
-const LABEL_BOX_HEIGHT = CHART_FONT.size + LABEL_PAD_Y * 2;
+let LABEL_PAD_X = 8;
+let LABEL_PAD_Y = 5;
+let LABEL_BOX_HEIGHT = 23;
+
+function syncChartTypography() {
+  const t = getChartTypography('curriculum');
+  CHART_FONT.family = t.font.family;
+  CHART_FONT.size = t.font.size;
+  CHART_FONT.weight = t.font.weight;
+  CHART_FONT_CSS = t.fontCss;
+  LABEL_PAD_X = t.pill.padX;
+  LABEL_PAD_Y = t.pill.padY;
+  LABEL_BOX_HEIGHT = t.pill.boxHeight;
+}
 
 
 // Required Return Colors
@@ -72,6 +79,7 @@ function formatUSD(value) {
  * Create or update required return chart
  */
 export function renderChart(cashFlows, showLabels = true, requiredReturn = null) {
+  syncChartTypography();
   const canvas = document.getElementById('return-chart');
   if (!canvas) { console.error('Chart canvas not found'); return; }
 
@@ -146,14 +154,6 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
       },
       plugins: {
         title: { display: false },
-        subtitle: {
-          display: true,
-          text: 'Dividend stream continues indefinitely; first 10 years shown.',
-          position: 'bottom',
-          color: '#6b7280',
-          font: { size: 13, style: 'italic', family: CHART_FONT.family },
-          padding: { top: 8, bottom: 0 }
-        },
         legend: { display: false },
         tooltip: {
           usePointStyle: true,
@@ -192,11 +192,11 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
             display: true,
             text: 'Years',
             color: '#374151',
-            font: { size: 13, weight: '600', family: CHART_FONT.family }
+            font: { size: CHART_FONT.size, weight: '600', family: CHART_FONT.family }
           },
           ticks: {
             color: '#374151',
-            font: { size: 13, weight: '600', family: CHART_FONT.family }
+            font: { size: CHART_FONT.size, weight: '600', family: CHART_FONT.family }
           },
           grid: { display: false }
         },
@@ -205,7 +205,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
             display: true,
             text: 'Cash flows (USD)',
             color: '#374151',
-            font: { size: 13, weight: '600', family: CHART_FONT.family }
+            font: { size: CHART_FONT.size, weight: '600', family: CHART_FONT.family }
           },
           position: 'left',
           ticks: {
@@ -215,7 +215,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
             maxTicksLimit: 8,
             maxRotation: 0,
             minRotation: 0,
-            font: { size: 13, weight: '600', family: CHART_FONT.family }
+            font: { size: CHART_FONT.size, weight: '600', family: CHART_FONT.family }
           },
           grid: { color: 'rgba(0, 0, 0, 0.05)' }
         },
@@ -231,7 +231,7 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
             maxTicksLimit: 7,
             maxRotation: 0,
             minRotation: 0,
-            font: { size: 13, weight: '600', family: CHART_FONT.family }
+            font: { size: CHART_FONT.size, weight: '600', family: CHART_FONT.family }
           },
           grid: { display: false }
         }

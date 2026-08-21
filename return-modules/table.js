@@ -1,4 +1,4 @@
-import { $, formatPercentage, announceToScreenReader } from './utils.js';
+import { $, formatPercentage, announceToScreenReader, applyTableRoles } from './utils.js';
 
 export function renderTable(cashFlows, requiredReturn) {
   const table = $('#cash-flow-table');
@@ -19,41 +19,33 @@ export function renderTable(cashFlows, requiredReturn) {
     <thead>
       <tr>
         <th scope="col" class="text-left">Year</th>
-        <th scope="col" class="text-right">Required Return <span style="color: #6b35e8;">(<i>r</i>)</span></th>
-        <th scope="col" class="text-right">Dividend (USD) <span style="color: #2d59c4;">(Div<sub><i>t</i></sub>)</span></th>
-        <th scope="col" class="text-right">Initial investment / Market price (USD) <span style="color: #a84f15;">(PV<sub><i>t</i></sub>)</span></th>
+        <th scope="col" class="text-right table-var-3">Required return (𝑟)</th>
+        <th scope="col" class="text-right table-var-2">Dividend (Div<sub>𝑡</sub>) (USD)</th>
+        <th scope="col" class="text-right table-var-6">Initial investment / Market price (PV<sub>𝑡</sub>) (USD)</th>
         <th scope="col" class="text-right">Total Cash Flow (USD)</th>
         <th scope="col" class="text-right">Cumulative (USD)</th>
       </tr>
     </thead>
     <tbody>`;
 
+  // data-label mirrors the column header: it becomes the visible label when the
+  // shared base reflows each row into a card below 768px. cell-value keeps the
+  // value as a single element so it stays on the right of that label.
   cashFlows.forEach((cf) => {
     html += `
       <tr>
-        <td class="text-left">${cf.year}</td>
-        <td class="text-right" style="color: #6b35e8;">${formatPercentage(requiredReturn)}</td>
-        <td class="text-right" style="color: #2d59c4;">${formatUSD(cf.dividend)}</td>
-        <td class="text-right" style="color: #a84f15;">${formatUSD(cf.investment)}</td>
-        <td class="text-right"><strong>${formatUSD(cf.totalCashFlow)}</strong></td>
-        <td class="text-right"><strong>${formatUSD(cf.cumulativeCashFlow)}</strong></td>
+        <th scope="row" class="text-left" data-label="Year">${cf.year}</th>
+        <td class="text-right" data-label="Required return (𝑟)"><span class="cell-value table-var-3">${formatPercentage(requiredReturn)}</span></td>
+        <td class="text-right" data-label="Dividend (Div𝑡) (USD)"><span class="cell-value table-var-2">${formatUSD(cf.dividend)}</span></td>
+        <td class="text-right" data-label="Initial investment / Market price (PV𝑡) (USD)"><span class="cell-value table-var-6">${formatUSD(cf.investment)}</span></td>
+        <td class="text-right" data-label="Total Cash Flow (USD)"><span class="cell-value"><strong>${formatUSD(cf.totalCashFlow)}</strong></span></td>
+        <td class="text-right" data-label="Cumulative (USD)"><span class="cell-value"><strong>${formatUSD(cf.cumulativeCashFlow)}</strong></span></td>
       </tr>`;
   });
 
   html += `</tbody>`;
   table.innerHTML = html;
-  table.setAttribute('aria-label', 'Required return projection table');
-
-  // Add note below table
-  const tableContainer = document.getElementById('table-container');
-  let note = tableContainer.querySelector('.table-indefinitely-note');
-  if (!note) {
-    note = document.createElement('p');
-    note.className = 'table-indefinitely-note';
-    note.style.cssText = 'font-size: 0.8125rem; color: #6b7280; font-style: italic; margin: 0.5rem 0.75rem 0.5rem; padding-bottom: 0.25rem;';
-    tableContainer.appendChild(note);
-  }
-  note.textContent = 'Dividend stream continues indefinitely; first 10 years shown.';
+  applyTableRoles(table);
 
   announceToScreenReader('Table view loaded with required return projections.');
 }

@@ -68,15 +68,15 @@
             <div class="input-group-inline">
               <div class="input-inline">
                 <label for="market-price" class="input-label-inline">
-                  Market price (<span style="color: var(--color-return-negative);">PV<sub><i>t</i></sub></span>):
+                  Market price (<span class="label-var-price">PV<sub>𝑡</sub></span>):
                 </label>
                 <div class="input-with-suffix-inline">
-                  <span class="input-prefix-inline">USD</span>
+                  <span class="input-prefix-inline" aria-hidden="true">USD</span>
                   <input
                     type="number"
                     inputmode="decimal"
                     id="market-price"
-                    class="input-field-inline"
+                    class="input-field-inline input-with-prefix"
                     min="1" max="500" step="0.1" value="54.6"
                     aria-describedby="inputHelp">
                 </div>
@@ -84,15 +84,15 @@
 
               <div class="input-inline">
                 <label for="current-dividend" class="input-label-inline">
-                  Current dividend (<span style="color: var(--color-return-dividend);">Div<sub><i>t</i></sub></span>):
+                  Current dividend (<span class="label-var-dividend">Div<sub>𝑡</sub></span>):
                 </label>
                 <div class="input-with-suffix-inline">
-                  <span class="input-prefix-inline">USD</span>
+                  <span class="input-prefix-inline" aria-hidden="true">USD</span>
                   <input
                     type="number"
                     inputmode="decimal"
                     id="current-dividend"
-                    class="input-field-inline"
+                    class="input-field-inline input-with-prefix"
                     min="0" max="50" step="0.1" value="5.1"
                     aria-describedby="inputHelp">
                 </div>
@@ -100,7 +100,7 @@
 
               <div class="input-inline">
                 <label for="growth-rate" class="input-label-inline">
-                  Growth rate (<span style="color: var(--color-return-growth);"><i>g</i></span>):
+                  Growth rate (<span class="label-var-growth">𝑔</span>):
                 </label>
                 <div class="input-with-suffix-inline">
                   <input
@@ -142,15 +142,15 @@
                  aria-label="Chart legend">
               <span class="legend-item">
                 <span class="legend-color" style="background-color: var(--color-return-negative);"></span>
-                Initial investment / Market price (<span style="color: var(--color-return-negative);">PV<sub><i>t</i></sub></span>)
+                Initial investment / Market price (<span style="color: var(--color-return-negative);">PV<sub>𝑡</sub></span>)
               </span>
               <span class="legend-item">
                 <span class="legend-color" style="background-color: var(--color-return-dividend);"></span>
-                Dividend cash flow (<span style="color: var(--color-return-dividend);">Div<sub><i>t</i></sub></span>)
+                Dividend cash flow (<span style="color: var(--color-return-dividend);">Div<sub>𝑡</sub></span>)
               </span>
               <span class="legend-item">
                 <span class="legend-color legend-dashed-line" style="border-bottom: 2px dashed var(--color-return-required); background: none; width: 1.5rem; height: 0; border-left: none; border-right: none; border-top: none;"></span>
-                Required return (<span style="color: var(--color-return-required);"><i>r</i></span>)
+                Required return (<span style="color: var(--color-return-required);">𝑟</span>)
               </span>
             </div>
             <div class="button-group" role="group" aria-label="View mode - switch between chart and table">
@@ -169,7 +169,7 @@
             <h4 id="return-chart-title">Required return and dividend projection over time</h4>
             <p>
               This chart displays the projected dividend cash flows over 10 years with the calculated required return.
-              The dividend stream continues indefinitely, but only the first 10 years are shown.
+              The dividend stream continues until infinity, but only the first 10 years are shown.
               At year 0, the initial stock purchase price is shown as a negative cash flow (money paid out).
               At each subsequent year, dividend payments grow at the specified growth rate.
               The dashed purple line shows the constant required return percentage on the right axis.
@@ -185,11 +185,15 @@
           </div>
 
           <!-- Table container -->
-          <div id="table-container" class="table-wrapper" style="display: none;">
+          <div id="table-container" class="table-wrapper table-card-layout" style="display: none;"
+               role="region" aria-label="Required return projection table" tabindex="0">
             <table id="cash-flow-table" class="data-table">
               <!-- Populated by JavaScript -->
             </table>
           </div>
+          <p class="table-note" id="horizon-note">
+            Note: Cash flows continue until infinity, but only the first 10 years are shown.
+          </p>
         </div>
       </section>
 
