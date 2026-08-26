@@ -167,8 +167,7 @@
 
           <div class="sr-only" aria-live="polite" aria-atomic="true" id="view-announcement"></div>
 
-          <!-- Hidden chart description - hidden from SR independent traversal, only used via aria-describedby when chart is focused -->
-          <div hidden id="return-chart-desc">
+          <div class="sr-only" id="return-chart-desc">
             <h4 id="return-chart-title">Required return and dividend projection over time</h4>
             <p>
               This chart displays the projected dividend cash flows over 10 years with the calculated required return.
@@ -178,13 +177,19 @@
               The dashed purple line shows the constant required return percentage on the right axis.
             </p>
           </div>
+          <p id="chart-keyboard-help" class="sr-only">
+            Use Left and Right arrow keys to move between years. Home moves to year 0 and End moves to the final year.
+          </p>
+          <p id="chart-point-announcement" class="sr-only" aria-live="polite" aria-atomic="true"></p>
 
           <!-- Chart container -->
           <div id="chart-container" class="chart-wrapper"
                role="region"
                aria-labelledby="return-chart-title"
                tabindex="-1">
-            <canvas id="return-chart"></canvas>
+            <canvas id="return-chart" role="img"
+                    aria-labelledby="return-chart-title"
+                    aria-describedby="return-chart-desc chart-keyboard-help"></canvas>
           </div>
 
           <!-- Table container -->

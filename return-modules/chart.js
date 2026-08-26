@@ -145,13 +145,6 @@ export function renderChart(cashFlows, showLabels = true, requiredReturn = null)
       maintainAspectRatio: false,
       animation: reduceMotion ? { duration: 0 } : { duration: 400 },
       interaction: { mode: 'index', intersect: false },
-      onHover: (event, activeElements) => {
-        if (isKeyboardMode && document.activeElement === canvas) return;
-        if (activeElements.length > 0) {
-          const index = activeElements[0].index;
-          announceDataPoint(cashFlows[index], totalData[index], requiredReturn);
-        }
-      },
       plugins: {
         title: { display: false },
         legend: { display: false },
@@ -433,15 +426,8 @@ function showTooltipAtIndex(index) {
 }
 
 function announceDataPoint(cashFlow, total, requiredReturn) {
-  let liveRegion = document.getElementById('chart-live-region');
-  if (!liveRegion) {
-    liveRegion = document.createElement('div');
-    liveRegion.id = 'chart-live-region';
-    liveRegion.setAttribute('aria-live', 'polite');
-    liveRegion.setAttribute('aria-atomic', 'true');
-    liveRegion.className = 'sr-only';
-    document.body.appendChild(liveRegion);
-  }
+  const liveRegion = document.getElementById('chart-point-announcement');
+  if (!liveRegion || liveRegion.getAttribute('aria-hidden') === 'true') return;
   const isInitialYear = cashFlow.year === 0;
   const investmentLabel = isInitialYear ? 'Initial investment / Market price' : 'No investment';
   const announcement =
