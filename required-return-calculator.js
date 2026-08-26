@@ -358,39 +358,38 @@ function handleResponsiveView() {
 // SELF-TESTS
 // =============================================================================
 
+function logSelfTest(name, passed, detail) {
+  if (passed) console.log(`✓ ${name}`);
+  else console.warn(`✗ ${name}${detail ? ': ' + detail : ''}`);
+}
+
 function runSelfTests() {
   console.log('Running self-tests...');
-  
-  const tests = [
-    {
-      name: 'Basic required return calculation',
-      inputs: { marketPrice: 50, currentDividend: 2, growthRate: 5 },
-      expected: { returnApprox: 9.2 } // (2*1.05)/50 + 0.05 = 0.042 + 0.05 = 0.092
-    },
-    {
-      name: 'Higher growth rate',
-      inputs: { marketPrice: 100, currentDividend: 3, growthRate: 8 },
-      expected: { returnApprox: 11.24 } // (3*1.08)/100 + 0.08 = 0.0324 + 0.08 = 0.1124
-    }
-  ];
-  
-  tests.forEach(test => {
-    try {
-      const result = calculateRequiredReturnMetrics(test.inputs);
-      
-      if (test.expected.returnApprox !== undefined) {
-        const diff = Math.abs(result.requiredReturn - test.expected.returnApprox);
-        if (diff <= 0.1) {
-          console.log(`✓ ${test.name} passed`);
-        } else {
-          console.warn(`✗ ${test.name} failed: expected ~${test.expected.returnApprox}%, got ${result.requiredReturn.toFixed(2)}%`);
-        }
-      }
-    } catch (error) {
-      console.error(`✗ ${test.name} threw error:`, error);
-    }
+
+  const defaults = calculateRequiredReturnMetrics({
+    marketPrice: 54.6, currentDividend: 5.1, growthRate: 6.4
   });
-  
+  logSelfTest('Defaults → r ≈ 16.34%', Math.abs(defaults.requiredReturn - 16.34) <= 0.1, `got ${defaults.requiredReturn}`);
+  logSelfTest('Valid outputs are finite', Number.isFinite(defaults.requiredReturn));
+
+  const basic = calculateRequiredReturnMetrics({ marketPrice: 50, currentDividend: 2, growthRate: 5 });
+  logSelfTest('Basic required return ≈ 9.2%', Math.abs(basic.requiredReturn - 9.2) <= 0.1, `got ${basic.requiredReturn}`);
+
+  const empty = validateAllInputs({ marketPrice: NaN, currentDividend: 5.1, growthRate: 6.4 });
+  logSelfTest('Empty market price is required', Boolean(empty.marketPrice));
+
+  const range = validateAllInputs({ marketPrice: 501, currentDividend: 5.1, growthRate: 6.4 });
+  logSelfTest('Price above max is rejected', Boolean(range.marketPrice));
+
+  const zeroDiv = calculateRequiredReturnMetrics({
+    marketPrice: 54.6, currentDividend: 0, growthRate: 6.4
+  });
+  logSelfTest(
+    'Zero dividend keeps r finite and equal to g',
+    Number.isFinite(zeroDiv.requiredReturn) && Math.abs(zeroDiv.requiredReturn - 6.4) < 0.01,
+    `got ${zeroDiv.requiredReturn}`
+  );
+
   console.log('Self-tests complete');
 }
 
