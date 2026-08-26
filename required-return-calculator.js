@@ -30,6 +30,13 @@ import { renderChart, shouldShowLabels, destroyChart } from './return-modules/ch
 import { renderTable } from './return-modules/table.js';
 import { renderResults } from './return-modules/results.js';
 import { renderDynamicEquation, renderStaticEquation } from './return-modules/equation.js';
+import { allFinite } from './validation-ui.js';
+import {
+  applyChartTableVisibility,
+  updateToggleButtonStates,
+  announceView,
+  VIEW_ANNOUNCEMENTS,
+} from './view-toggle.js';
 
 // =============================================================================
 // INITIALIZATION
@@ -108,6 +115,8 @@ function setupInputListeners() {
       
       if (!hasErrors(errors)) {
         updateCalculations();
+      } else {
+        setState({ returnCalculations: null });
       }
     }, 300);
     
@@ -134,6 +143,10 @@ function updateCalculations() {
       currentDividend,
       growthRate
     });
+    if (!allFinite(calculations.requiredReturn)) {
+      setState({ returnCalculations: null });
+      return;
+    }
     
     setState({ returnCalculations: calculations });
   } catch (error) {
@@ -154,10 +167,6 @@ function setupViewToggle() {
     console.error('Toggle buttons not found');
     return;
   }
-  
-  // Make buttons focusable via Tab key
-  chartBtn.tabIndex = 0;
-  tableBtn.tabIndex = 0;
   
   // Click handlers - clicking moves focus to content
   listen(chartBtn, 'click', () => switchView('chart', true));
@@ -198,20 +207,19 @@ function switchView(view, moveFocus = false) {
   const tableContainer = $('#table-container');
   const legend = $('#chart-legend');
   
+  const changed = state.viewMode !== view;
   setState({ viewMode: view });
-  
+  const forceTable = window.innerWidth < 600;
+  updateToggleButtonStates({ chartBtn, tableBtn, showingChart: view === 'chart', forceTable });
+  applyChartTableVisibility({
+    chartEl: chartContainer,
+    tableEl: tableContainer,
+    canvas: $('#return-chart'),
+    showChart: view === 'chart',
+  });
+
   if (view === 'chart') {
-    chartBtn.classList.add('active');
-    chartBtn.setAttribute('aria-pressed', 'true');
-    tableBtn.classList.remove('active');
-    tableBtn.setAttribute('aria-pressed', 'false');
-    
-    chartContainer.style.display = 'block';
-    tableContainer.style.display = 'none';
-    legend.style.display = 'flex';
-    
-    announceToScreenReader('Chart view active');
-    
+    if (legend) legend.style.display = 'flex';
     // Only move focus to content if requested (e.g., from click or Enter key)
     if (moveFocus) {
       setTimeout(() => {
@@ -222,20 +230,11 @@ function switchView(view, moveFocus = false) {
       }, 100);
     }
   } else {
-    tableBtn.classList.add('active');
-    tableBtn.setAttribute('aria-pressed', 'true');
-    chartBtn.classList.remove('active');
-    chartBtn.setAttribute('aria-pressed', 'false');
-    
-    tableContainer.style.display = 'block';
-    chartContainer.style.display = 'none';
-    legend.style.display = 'none';
-    
-    announceToScreenReader('Table view active');
-    
+    if (legend) legend.style.display = 'none';
     // Don't focus anything - let tab order continue naturally
     // The table is already in the DOM and screen readers can navigate it
   }
+  if (changed) announceView(VIEW_ANNOUNCEMENTS[view]);
 }
 
 // =============================================================================
@@ -245,7 +244,10 @@ function switchView(view, moveFocus = false) {
 function handleStateChange(newState) {
   const { returnCalculations, viewMode } = newState;
   
-  if (!returnCalculations) return;
+  if (!returnCalculations) {
+    clearCalculatedViews();
+    return;
+  }
   
   renderResults(returnCalculations, {
     marketPrice: newState.marketPrice,
@@ -265,6 +267,16 @@ function handleStateChange(newState) {
   }
   
   renderTable(returnCalculations.cashFlows, returnCalculations.requiredReturn);
+}
+
+function clearCalculatedViews() {
+  destroyChart();
+  const results = $('#results-content');
+  if (results) results.innerHTML = '';
+  const equation = $('#dynamic-mathml-equation');
+  if (equation) equation.innerHTML = '';
+  const table = $('#cash-flow-table');
+  if (table) table.innerHTML = '';
 }
 
 // =============================================================================
@@ -324,6 +336,12 @@ function handleResponsiveView() {
     }
     if (helper) helper.style.display = 'none';
   }
+  updateToggleButtonStates({
+    chartBtn,
+    tableBtn,
+    showingChart: state.viewMode === 'chart',
+    forceTable: viewportWidth < 600,
+  });
 }
 
 // =============================================================================
