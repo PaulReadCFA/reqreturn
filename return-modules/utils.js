@@ -162,7 +162,7 @@ export function initializeStaticEquation() {
   
   // Using MathJax with TeX notation for the static equation
   // \; gives medium space around + signs; all + are explicitly black
-  const equation = `$$\\color{#6b35e8}{r} = \\frac{\\color{#3c6ae5}{Div_t} \\color{black}{\\;(1 \\;+\\; } \\color{#15803d}{g} \\color{black}{)}}{\\color{#b95b1d}{PV_t}} \\color{black}{\\;+\\;} \\color{#15803d}{g} = \\frac{\\color{#3c6ae5}{Div_{t\\color{black}{+1}}}}{\\color{#b95b1d}{PV_t}} \\color{black}{\\;+\\;} \\color{#15803d}{g}$$`;
+  const equation = `$$\\color{#7A46FF}{r} = \\frac{\\color{#3c6ae5}{Div_t} \\color{black}{\\;(1 \\;+\\; } \\color{#07514F}{g} \\color{black}{)}}{\\color{#b95b1d}{PV_t}} \\color{black}{\\;+\\;} \\color{#07514F}{g} = \\frac{\\color{#3c6ae5}{Div_{t\\color{black}{+1}}}}{\\color{#b95b1d}{PV_t}} \\color{black}{\\;+\\;} \\color{#07514F}{g}$$`;
   
   container.innerHTML = equation;
   

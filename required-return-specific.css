@@ -27,8 +27,6 @@ mjx-assistive-mml[aria-hidden="true"] * {
    1. REQUIRED RETURN SPECIFIC COLOR ASSIGNMENTS
    ========================================================================== */
 :root {
-  /* Preserve prior local base purple (slightly darker for contrast) */
-  --color-purple-bold: #6b35e8;
   --color-return-required: var(--color-purple-bold);
   --color-return-dividend: var(--color-blue-interactive);
   --color-return-negative: var(--color-orange-deep);
@@ -103,6 +101,19 @@ mjx-assistive-mml[aria-hidden="true"] * {
 .label-var-price    { color: var(--color-return-negative); }
 .label-var-dividend { color: var(--color-return-dividend); }
 .label-var-growth   { color: var(--color-return-growth); }
+
+.legend-swatch-price { background-color: var(--color-return-negative); }
+.legend-swatch-dividend { background-color: var(--color-return-dividend); }
+.legend-var-price { color: var(--color-return-negative); }
+.legend-var-dividend { color: var(--color-return-dividend); }
+.legend-var-return { color: var(--color-return-required); }
+.legend-line-return {
+  width: 1.5rem;
+  height: 0;
+  background: none;
+  border: 0;
+  border-bottom: 2px dashed var(--color-return-required);
+}
 
 #calculator .input-section {
   max-width: 100%;
@@ -227,10 +238,6 @@ math mo { margin: 0 0.1em; }
   min-width: 0;
 }
 
-.view-controls {
-  min-height: 44px;
-  align-items: center;
-}
 /* ==========================================================================
    REDUCED MOTION - disable equation fade
    ========================================================================== */

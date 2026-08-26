@@ -34,7 +34,7 @@ function syncChartTypography() {
 const COLORS = {
   dividend: '#3c6ae5',
   negative: '#b95b1d',
-  required: '#6b35e8',
+  required: '#7A46FF',
   darkText: '#06005a'
 };
 

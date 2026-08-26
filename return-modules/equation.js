@@ -64,7 +64,7 @@ export function renderStaticEquation() {
   const container = document.getElementById('static-equation');
   if (!container) { console.error('Static equation container not found'); return; }
 
-  const equation = `$$\\color{#6b35e8}{r} = \\frac{\\color{#3c6ae5}{Div_t} \\color{black}{\\;(1 \\;+\\; } \\color{#15803d}{g} \\color{black}{)}}{\\color{#b95b1d}{PV_t}} \\color{black}{\\;+\\;} \\color{#15803d}{g} = \\frac{\\color{#3c6ae5}{Div_{t\\color{black}{+1}}}}{\\color{#b95b1d}{PV_t}} \\color{black}{\\;+\\;} \\color{#15803d}{g}$$`;
+  const equation = `$$\\color{#7A46FF}{r} = \\frac{\\color{#3c6ae5}{Div_t} \\color{black}{\\;(1 \\;+\\; } \\color{#07514F}{g} \\color{black}{)}}{\\color{#b95b1d}{PV_t}} \\color{black}{\\;+\\;} \\color{#07514F}{g} = \\frac{\\color{#3c6ae5}{Div_{t\\color{black}{+1}}}}{\\color{#b95b1d}{PV_t}} \\color{black}{\\;+\\;} \\color{#07514F}{g}$$`;
 
   container.innerHTML = equation;
 
@@ -110,7 +110,7 @@ export function renderDynamicEquation(calculations, params) {
   const gDecimal   = (growthRate / 100).toFixed(4);
 
   // Explicit \color{black} on every + sign; \; spacing around +
-  const equation = `$$\\color{#6b35e8}{r} = \\frac{\\color{#3c6ae5}{${d0Str}} \\color{black}{\\;(1 \\;+\\; } \\color{#15803d}{${gDecimal}} \\color{black}{)}}{\\color{#b95b1d}{${p0Str}}} \\color{black}{\\;+\\;} \\color{#15803d}{${gDecimal}} = \\frac{\\color{#3c6ae5}{${d1Str}}}{\\color{#b95b1d}{${p0Str}}} \\color{black}{\\;+\\;} \\color{#15803d}{${gDecimal}} = \\color{#6b35e8}{${rDecimal}} = \\color{#6b35e8}{${rPercent}\\%}$$`;
+  const equation = `$$\\color{#7A46FF}{r} = \\frac{\\color{#3c6ae5}{${d0Str}} \\color{black}{\\;(1 \\;+\\; } \\color{#07514F}{${gDecimal}} \\color{black}{)}}{\\color{#b95b1d}{${p0Str}}} \\color{black}{\\;+\\;} \\color{#07514F}{${gDecimal}} = \\frac{\\color{#3c6ae5}{${d1Str}}}{\\color{#b95b1d}{${p0Str}}} \\color{black}{\\;+\\;} \\color{#07514F}{${gDecimal}} = \\color{#7A46FF}{${rDecimal}} = \\color{#7A46FF}{${rPercent}\\%}$$`;
 
   // Fade outer container, update inner, restore after MathJax renders
   setEquationContent(container, equation);
