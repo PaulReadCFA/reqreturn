@@ -122,9 +122,10 @@ export function renderDynamicEquation(calculations, params) {
   const d1Plain    = `USD ${d1.toFixed(2)}`;
   const p0Plain    = `USD ${marketPrice.toFixed(2)}`;
 
-  // Update the section's aria-label so SR users hear the result immediately
-  // on first load and on every recalculation, without needing to trigger a change
-  const card = document.getElementById('dynamic-equation-card');
+  // Label the equation region, not the card: the card is named by its heading
+  // via aria-labelledby, which wins over aria-label and would silently swallow
+  // the result.
+  const card = document.getElementById('dynamic-equation-container');
   if (card) {
     const label =
       `Implied Required Return Equation. ` +

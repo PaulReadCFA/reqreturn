@@ -44,10 +44,11 @@ mjx-assistive-mml[aria-hidden="true"] * {
   background-color: var(--color-bg-teal);
   border-color: var(--color-teal-data);
 }
+/* Titles and values sit on 10% tints — tint-safe family from cfa-base. */
 .result-title.required-return {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--color-purple-bold);
+  color: var(--color-purple-contrast);
   margin-bottom: 0.5rem;
   letter-spacing: normal;
   text-transform: none;
@@ -55,14 +56,14 @@ mjx-assistive-mml[aria-hidden="true"] * {
 .result-title.model-info {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--color-teal-data);
+  color: var(--color-teal-contrast);
   letter-spacing: normal;
   text-transform: none;
 }
 .result-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-purple-bold);
+  color: var(--color-purple-contrast);
   line-height: 1.2;
   word-wrap: break-word;
   overflow-wrap: break-word;
