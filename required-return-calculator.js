@@ -22,14 +22,13 @@ import {
   focusElement, 
   announceToScreenReader,
   debounce,
-  initializeStaticEquation,
   clampNumericInputLength,
   NUMERIC_INPUT_MAX_CHARS
 } from './return-modules/utils.js';
 import { renderChart, shouldShowLabels, destroyChart } from './return-modules/chart.js';
 import { renderTable } from './return-modules/table.js';
 import { renderResults } from './return-modules/results.js';
-import { renderDynamicEquation, renderStaticEquation } from './return-modules/equation.js';
+import { renderDynamicEquation } from './return-modules/equation.js';
 import { allFinite } from './validation-ui.js';
 import {
   applyChartTableVisibility,
@@ -283,7 +282,7 @@ function clearCalculatedViews() {
   destroyChart();
   const results = $('#results-content');
   if (results) results.innerHTML = '';
-  const equation = $('#dynamic-mathml-equation');
+  const equation = $('#dynamic-equation');
   if (equation) equation.innerHTML = '';
   const table = $('#cash-flow-table');
   if (table) table.innerHTML = '';

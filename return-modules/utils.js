@@ -60,25 +60,6 @@ export function clampNumericInputLength(input, maxLen) {
 }
 
 /**
- * Format number as currency
- * @param {number} value - Numeric value
- * @param {boolean} signed - Include sign for negative values
- * @returns {string} Formatted currency string
- */
-export function formatCurrency(value, signed = false) {
-  const absValue = Math.abs(value);
-  const formatted = absValue.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-  
-  if (value < 0) {
-    return `−$${formatted}`;
-  }
-  return `$${formatted}`;
-}
-
-/**
  * Format number as percentage
  * @param {number} value - Numeric value (as percentage, e.g., 5.5 for 5.5%)
  * @param {number} decimals - Number of decimal places
@@ -86,6 +67,18 @@ export function formatCurrency(value, signed = false) {
  */
 export function formatPercentage(value, decimals = 2) {
   return `${value.toFixed(decimals)}%`;
+}
+
+/** Spoken money for live regions and aria-labels (not letter-by-letter USD). */
+export function formatCurrencySpeech(value) {
+  if (!Number.isFinite(Number(value))) return '0.00 US dollars';
+  const n = Number(value);
+  const formatted = Math.abs(n).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+  const amount = n < 0 ? `\u2212${formatted}` : formatted;
+  return `${amount} US dollars`;
 }
 
 /**
@@ -147,92 +140,6 @@ export function announceToScreenReader(message) {
       announcement.textContent = '';
     }, 1000);
   }
-}
-
-/**
- * Initialize static equation rendering
- * Call this once when the page loads to render the static equation with variables
- */
-export function initializeStaticEquation() {
-  const container = document.getElementById('static-equation');
-  if (!container) {
-    console.error('Static equation container not found');
-    return;
-  }
-  
-  // Using MathJax with TeX notation for the static equation
-  // \; gives medium space around + signs; all + are explicitly black
-  const equation = `$$\\color{#7A46FF}{r} = \\frac{\\color{#3c6ae5}{Div_t} \\color{black}{\\;(1 \\;+\\; } \\color{#07514F}{g} \\color{black}{)}}{\\color{#b95b1d}{PV_t}} \\color{black}{\\;+\\;} \\color{#07514F}{g} = \\frac{\\color{#3c6ae5}{Div_{t\\color{black}{+1}}}}{\\color{#b95b1d}{PV_t}} \\color{black}{\\;+\\;} \\color{#07514F}{g}$$`;
-  
-  container.innerHTML = equation;
-  
-  // Typeset the equation with MathJax
-  if (window.MathJax) {
-    MathJax.Hub.Queue(["Typeset", MathJax.Hub, container]);
-    
-    // Use MutationObserver to remove tabindex as MathJax adds it
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-          if (node.nodeType === 1) {
-            if (node.classList && node.classList.contains('MathJax')) {
-              node.removeAttribute('tabindex');
-            }
-            const mathJaxElements = node.querySelectorAll ? node.querySelectorAll('.MathJax') : [];
-            mathJaxElements.forEach(el => el.removeAttribute('tabindex'));
-          }
-        });
-      });
-    });
-    
-    observer.observe(container, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['tabindex']
-    });
-    
-    // Also remove immediately after typesetting
-    MathJax.Hub.Queue(() => {
-      const mathJaxElements = container.querySelectorAll('.MathJax');
-      mathJaxElements.forEach(el => {
-        el.removeAttribute('tabindex');
-      });
-      setTimeout(() => observer.disconnect(), 1000);
-    });
-  }
-}
-
-/**
- * Initialize all calculator features
- * Call this once after DOM is loaded and all elements are in place
- */
-export function initializeCalculator() {
-  // Render static equation with color-coded variables
-  initializeStaticEquation();
-  
-  // Global cleanup for any MathJax tabindex issues
-  if (window.MathJax) {
-    // Aggressive cleanup function
-    const cleanupMathJax = () => {
-      document.querySelectorAll('.MathJax[tabindex]').forEach(el => {
-        el.removeAttribute('tabindex');
-      });
-    };
-    
-    // Run cleanup multiple times with delays
-    setTimeout(cleanupMathJax, 500);
-    setTimeout(cleanupMathJax, 1000);
-    setTimeout(cleanupMathJax, 2000);
-    setTimeout(cleanupMathJax, 3000);
-    
-    // Also run on any MathJax processing complete
-    MathJax.Hub.Queue(() => {
-      cleanupMathJax();
-    });
-  }
-  
-  console.log('Calculator initialization complete');
 }
 
 /**

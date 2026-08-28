@@ -60,12 +60,21 @@
       },
       showProcessingMessages: false,
       messageStyle: "none",
+      menuSettings: { explorer: true },
       skipStartupTypeset: false
     });
 
     function removeMathJaxTabindex() {
-      document.querySelectorAll(".MathJax, .MathJax_Display, [id^='MathJax-']").forEach(function (el) {
-        el.removeAttribute("tabindex");
+      document.querySelectorAll("[tabindex]").forEach(function (el) {
+        /* Keep MathJax's accessible interaction inside the formula card. */
+        if (el.closest && el.closest(".formula-equation-card")) return;
+        if (el.classList.contains("MathJax") ||
+            el.classList.contains("MathJax_Display") ||
+            (el.id && el.id.indexOf("MathJax-") === 0) ||
+            el.tagName === "MATH" ||
+            (el.closest && el.closest(".MathJax"))) {
+          el.removeAttribute("tabindex");
+        }
       });
     }
 
@@ -73,6 +82,7 @@
       removeMathJaxTabindex();
       setTimeout(removeMathJaxTabindex, 100);
       setTimeout(removeMathJaxTabindex, 500);
+      setTimeout(removeMathJaxTabindex, 1000);
     });
   </script>
 
@@ -81,7 +91,8 @@
 <body>
   <div class="container">
     <main class="content">
-      <section id="static-equation-card" class="card">
+      <section id="static-equation-card" class="card formula-equation-card"
+               role="region" aria-label="Required return equation">
         <div class="equation-container">
           <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
             <mrow>

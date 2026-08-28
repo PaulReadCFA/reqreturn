@@ -1,99 +1,117 @@
-import { formatPercentage } from './utils.js';
+import { formatPercentage, formatCurrencySpeech } from './utils.js';
+import { renderEquation } from '../equation-render.js';
 
 /**
  * Format a numeric value as USD currency string for equation display.
- * No space between "USD" and digits (USD functions as currency symbol).
+ * No space between "USD" and digits.
  */
 function formatEquationUSD(value) {
   const absValue = Math.abs(value);
-  const formatted = absValue.toLocaleString('en-US', {
+  return `USD${absValue.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-  });
-  // \text{USD} keeps USD upright (non-italic) inside MathJax math mode
-  return `\\text{USD}${formatted}`;
-}
-
-/** Check user preference for reduced motion. */
-function prefersReducedMotion() {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  })}`;
 }
 
 /**
- * Set equation content and typeset with MathJax.
- * Snaps instantly to opacity:0 before setting innerHTML so raw TeX is
- * never painted. Fades back in after MathJax finishes (EE04 blank behaviour).
+ * Set equation content and typeset with MathJax. The shared mount holds the
+ * card's height and hides the source MathML while MathJax works, so the cards
+ * below stay put and raw markup is never visible.
  */
-function setEquationContent(innerContainer, latexString) {
-  const outerContainer = document.getElementById('dynamic-equation-container');
-  const reduceMotion = prefersReducedMotion();
+function setEquationContent(innerContainer, mathML) {
+  renderEquation(innerContainer, mathML);
+}
 
-  if (outerContainer) {
-    // Disable transition so the hide is instant — raw TeX never visible
-    outerContainer.style.transition = 'none';
-    outerContainer.style.opacity = '0';
-  }
+function buildStaticMathML() {
+  return `<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+    <mrow>
+      <mi mathcolor="#7A46FF">r</mi>
+      <mo>=</mo>
+      <mfrac>
+        <mrow>
+          <msub><mi mathcolor="#3C6AE5">Div</mi><mi>t</mi></msub>
+          <mo>&#x2062;</mo>
+          <mrow>
+            <mo>(</mo><mn>1</mn><mo>+</mo><mi mathcolor="#07514F">g</mi><mo>)</mo>
+          </mrow>
+        </mrow>
+        <msub><mi mathcolor="#B95B1D">PV</mi><mi>t</mi></msub>
+      </mfrac>
+      <mo>+</mo>
+      <mi mathcolor="#07514F">g</mi>
+      <mo>=</mo>
+      <mfrac>
+        <msub>
+          <mi mathcolor="#3C6AE5">Div</mi>
+          <mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow>
+        </msub>
+        <msub><mi mathcolor="#B95B1D">PV</mi><mi>t</mi></msub>
+      </mfrac>
+      <mo>+</mo>
+      <mi mathcolor="#07514F">g</mi>
+    </mrow>
+  </math>`;
+}
 
-  // Swap content while hidden
-  innerContainer.innerHTML = latexString;
-
-  if (window.MathJax) {
-    MathJax.Hub.Queue(['Typeset', MathJax.Hub, innerContainer]);
-    MathJax.Hub.Queue(() => {
-      innerContainer.querySelectorAll('.MathJax').forEach(el => el.removeAttribute('tabindex'));
-      if (outerContainer) {
-        // Re-enable transition for the fade-in only (skip if reduced motion)
-        outerContainer.style.transition = reduceMotion ? 'none' : 'opacity 0.15s ease';
-        outerContainer.style.opacity = '1';
-      }
-    });
-  } else {
-    if (outerContainer) {
-      outerContainer.style.transition = reduceMotion ? 'none' : 'opacity 0.15s ease';
-      outerContainer.style.opacity = '1';
-    }
-  }
+function buildDynamicMathML({
+  currentDividend,
+  d1,
+  marketPrice,
+  growthDecimal,
+  returnDecimal,
+  returnPercent,
+}) {
+  return `<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+    <mrow>
+      <mi mathcolor="#7A46FF">r</mi>
+      <mo>=</mo>
+      <mfrac>
+        <mrow>
+          <mtext mathcolor="#3C6AE5">${currentDividend}</mtext>
+          <mo>&#x2062;</mo>
+          <mrow>
+            <mo>(</mo><mn>1</mn><mo>+</mo>
+            <mn mathcolor="#07514F">${growthDecimal}</mn><mo>)</mo>
+          </mrow>
+        </mrow>
+        <mtext mathcolor="#B95B1D">${marketPrice}</mtext>
+      </mfrac>
+      <mo>+</mo>
+      <mn mathcolor="#07514F">${growthDecimal}</mn>
+      <mo>=</mo>
+      <mfrac>
+        <mtext mathcolor="#3C6AE5">${d1}</mtext>
+        <mtext mathcolor="#B95B1D">${marketPrice}</mtext>
+      </mfrac>
+      <mo>+</mo>
+      <mn mathcolor="#07514F">${growthDecimal}</mn>
+      <mo>=</mo>
+      <mn mathcolor="#7A46FF">${returnDecimal}</mn>
+      <mo>=</mo>
+      <mrow mathcolor="#7A46FF">
+        <mn>${returnPercent}</mn><mo>%</mo>
+      </mrow>
+    </mrow>
+  </math>`;
 }
 
 /**
  * Render static equation with color-coded variables.
- * - All + signs explicitly \color{black}
- * - \; medium spaces on either side of + in numerator and between terms
  */
 export function renderStaticEquation() {
   const container = document.getElementById('static-equation');
   if (!container) { console.error('Static equation container not found'); return; }
 
-  const equation = `$$\\color{#7A46FF}{r} = \\frac{\\color{#3c6ae5}{Div_t} \\color{black}{\\;(1 \\;+\\; } \\color{#07514F}{g} \\color{black}{)}}{\\color{#b95b1d}{PV_t}} \\color{black}{\\;+\\;} \\color{#07514F}{g} = \\frac{\\color{#3c6ae5}{Div_{t\\color{black}{+1}}}}{\\color{#b95b1d}{PV_t}} \\color{black}{\\;+\\;} \\color{#07514F}{g}$$`;
-
-  container.innerHTML = equation;
+  container.innerHTML = buildStaticMathML();
 
   if (window.MathJax) {
     MathJax.Hub.Queue(['Typeset', MathJax.Hub, container]);
-
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-          if (node.nodeType === 1) {
-            if (node.classList && node.classList.contains('MathJax')) node.removeAttribute('tabindex');
-            (node.querySelectorAll ? node.querySelectorAll('.MathJax') : [])
-              .forEach(el => el.removeAttribute('tabindex'));
-          }
-        });
-      });
-    });
-    observer.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ['tabindex'] });
-
-    MathJax.Hub.Queue(() => {
-      container.querySelectorAll('.MathJax').forEach(el => el.removeAttribute('tabindex'));
-      setTimeout(() => observer.disconnect(), 1000);
-    });
   }
 }
 
 /**
  * Render dynamic equation with numerical values.
- * Uses opacity fade to prevent raw TeX flash.
+ * Uses opacity fade to prevent a source-equation flash.
  */
 export function renderDynamicEquation(calculations, params) {
   const container = document.getElementById('dynamic-equation');
@@ -109,18 +127,21 @@ export function renderDynamicEquation(calculations, params) {
   const p0Str      = formatEquationUSD(marketPrice);
   const gDecimal   = (growthRate / 100).toFixed(4);
 
-  // Explicit \color{black} on every + sign; \; spacing around +
-  const equation = `$$\\color{#7A46FF}{r} = \\frac{\\color{#3c6ae5}{${d0Str}} \\color{black}{\\;(1 \\;+\\; } \\color{#07514F}{${gDecimal}} \\color{black}{)}}{\\color{#b95b1d}{${p0Str}}} \\color{black}{\\;+\\;} \\color{#07514F}{${gDecimal}} = \\frac{\\color{#3c6ae5}{${d1Str}}}{\\color{#b95b1d}{${p0Str}}} \\color{black}{\\;+\\;} \\color{#07514F}{${gDecimal}} = \\color{#7A46FF}{${rDecimal}} = \\color{#7A46FF}{${rPercent}\\%}$$`;
-
-  // Fade outer container, update inner, restore after MathJax renders
-  setEquationContent(container, equation);
+  setEquationContent(container, buildDynamicMathML({
+    currentDividend: d0Str,
+    d1: d1Str,
+    marketPrice: p0Str,
+    growthDecimal: gDecimal,
+    returnDecimal: rDecimal,
+    returnPercent: rPercent,
+  }));
 
   // Plain-text formatted values (used in both aria-label and live region)
   const gFormatted = formatPercentage(growthRate);
   const rFormatted = formatPercentage(requiredReturn);
-  const d0Plain    = `USD ${currentDividend.toFixed(2)}`;
-  const d1Plain    = `USD ${d1.toFixed(2)}`;
-  const p0Plain    = `USD ${marketPrice.toFixed(2)}`;
+  const d0Plain    = formatCurrencySpeech(currentDividend);
+  const d1Plain    = formatCurrencySpeech(d1);
+  const p0Plain    = formatCurrencySpeech(marketPrice);
 
   // Label the equation region, not the card: the card is named by its heading
   // via aria-labelledby, which wins over aria-label and would silently swallow

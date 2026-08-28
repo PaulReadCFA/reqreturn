@@ -3,7 +3,7 @@
  * Chart rendering using Chart.js with keyboard accessibility
  */
 
-import { formatCurrency, formatPercentage } from './utils.js';
+import { formatPercentage, formatCurrencySpeech } from './utils.js';
 import { getChartTypography, fillTightParenVar } from '../chart-typography.js';
 
 /** Curriculum chart label convention: 13px / 600 / Lato at the 18px design root. */
@@ -433,9 +433,9 @@ function announceDataPoint(cashFlow, total, requiredReturn) {
   const announcement =
     `Year ${cashFlow.year}. ` +
     `Required return: ${requiredReturn ? formatPercentage(requiredReturn) : '0%'}. ` +
-    `${investmentLabel}: ${formatUSD(cashFlow.investment)}. ` +
-    `Dividend: ${formatUSD(cashFlow.dividend)}. ` +
-    `Total: ${formatUSD(total)}.`;
+    `${investmentLabel}: ${formatCurrencySpeech(cashFlow.investment)}. ` +
+    `Dividend: ${formatCurrencySpeech(cashFlow.dividend)}. ` +
+    `Total: ${formatCurrencySpeech(total)}.`;
   liveRegion.textContent = announcement;
 }
 

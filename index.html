@@ -16,19 +16,39 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
+  <!-- MathJax 2.7.7: native MathML source + Explorer/AssistiveMML. -->
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        ignoreClass: "sr-only|equation-live-region|chart-live-region|view-announcement"
-      },
-      displayAlign: "center",
-      displayIndent: "0em",
-      showMathMenu: true,
-      menuSettings: { zoom: "Double-Click" }
+      MathML: { extensions: ["content-mathml.js"] },
+      "HTML-CSS": { scale: 100, linebreaks: { automatic: true } },
+      menuSettings: { explorer: true },
+      showProcessingMessages: false,
+      messageStyle: "none",
+      skipStartupTypeset: false
+    });
+
+    function removeRequiredReturnMathJaxTabindex() {
+      document.querySelectorAll('[tabindex]').forEach(function (el) {
+        /* Keep MathJax's own accessible interaction inside the equation. */
+        if (el.closest && el.closest('#dynamic-equation-container')) return;
+        if (el.classList.contains('MathJax') ||
+            el.classList.contains('MathJax_Display') ||
+            (el.id && el.id.indexOf('MathJax-') === 0) ||
+            el.tagName === 'MATH' ||
+            (el.closest && el.closest('.MathJax'))) {
+          el.removeAttribute('tabindex');
+        }
+      });
+    }
+
+    MathJax.Hub.Register.StartupHook("End", function () {
+      removeRequiredReturnMathJaxTabindex();
+      setTimeout(removeRequiredReturnMathJaxTabindex, 100);
+      setTimeout(removeRequiredReturnMathJaxTabindex, 500);
+      setTimeout(removeRequiredReturnMathJaxTabindex, 1000);
     });
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS_HTML"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=MML_HTMLorMML"></script>
 </head>
 <body>
   <noscript>
