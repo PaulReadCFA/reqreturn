@@ -1,4 +1,5 @@
-import { $, formatPercentage, announceToScreenReader, applyTableRoles } from './utils.js';
+import { $, formatPercentage, announceToScreenReader } from './utils.js';
+import { applyTableRoles } from '../table-roles.js';
 
 export function renderTable(cashFlows, requiredReturn) {
   const table = $('#cash-flow-table');
